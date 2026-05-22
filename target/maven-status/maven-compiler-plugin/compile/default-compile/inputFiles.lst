@@ -1,0 +1,9 @@
+/workspaces/spring-boot-basic-project/src/main/java/com/example/StudentDto.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/StudentController.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/HelloController.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/StudentService.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/Student.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/StudentRepository.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/Application.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/ScheduledStudentCreator.java
+/workspaces/spring-boot-basic-project/src/main/java/com/example/StudentGenerator.java
