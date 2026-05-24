@@ -1,15 +1,7 @@
-com/example/Student.class
-com/example/HelloController.class
-com/example/StudentRepository.class
-com/example/StudentController.class
-com/example/StudentDto.class
 com/example/repository/StudentRepository.class
 com/example/util/ScheduledStudentCreator.class
-com/example/StudentService.class
-com/example/util/StudentGenerator.class
 com/example/entity/Student.class
-com/example/StudentGenerator.class
-com/example/ScheduledStudentCreator.class
+com/example/util/StudentGenerator.class
 com/example/Application.class
 com/example/controller/StudentController.class
 com/example/service/StudentService.class
