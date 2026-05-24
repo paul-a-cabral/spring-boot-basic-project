@@ -3,21 +3,27 @@ package com.example.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Student;
 import com.example.repository.StudentRepository;
+import com.example.util.StudentGenerator;
 
 @Service
 public class StudentService {
 
     private final StudentRepository repository;
+    private final String emailDomain;
 
-    public StudentService(StudentRepository repository) {
+    public StudentService(StudentRepository repository,
+            @Value("${app.students.email.domain:example.com}") String emailDomain) {
         this.repository = repository;
+        this.emailDomain = emailDomain;
     }
 
-    public Student create(Student student) {
+    public Student create(@NonNull Student student) {
         return repository.save(student);
     }
 
@@ -25,7 +31,7 @@ public class StudentService {
         return repository.findAll();
     }
 
-    public Optional<Student> get(Long id) {
+    public Optional<Student> get(@NonNull Long id) {
         return repository.findById(id);
     }
 
@@ -33,18 +39,19 @@ public class StudentService {
         return repository.findByEmail(email);
     }
 
-    public Optional<Student> update(Long id, Student student) {
+    public Optional<Student> updateName(@NonNull Long id, String name) {
         return repository.findById(id)
                 .map(existing -> {
-                    existing.setName(student.getName());
-                    existing.setEmail(student.getEmail());
+                    String email = StudentGenerator.generateEmailFromName(name, emailDomain);
+                    existing.setName(name);
+                    existing.setEmail(email != null ? email : name.toLowerCase().replace(" ", "."));
                     return repository.save(existing);
                 });
     }
 
-    public boolean delete(Long id) {
+    public boolean delete(@NonNull Long id) {
         return repository.findById(id)
-                .map(existing -> {
+                .map((@NonNull var existing) -> {
                     repository.delete(existing);
                     return true;
                 })

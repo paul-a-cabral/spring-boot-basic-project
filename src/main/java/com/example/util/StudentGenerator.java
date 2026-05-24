@@ -4,6 +4,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.lang.Nullable;
+
 public final class StudentGenerator {
 
     private StudentGenerator() {}
@@ -30,7 +32,8 @@ public final class StudentGenerator {
         return sb.toString();
     }
 
-    public static String generateEmailFromName(String name, String domain) {
+    @Nullable
+    public static String generateEmailFromName(@Nullable String name, @Nullable String domain) {
         if (name == null || name.isBlank()) return null;
         String local = name.trim().toLowerCase().replaceAll("\\s+", ".");
         if (domain == null || domain.isBlank()) return local;

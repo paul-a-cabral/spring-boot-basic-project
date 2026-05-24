@@ -7,7 +7,9 @@ import static org.mockito.BDDMockito.given;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -18,12 +20,15 @@ import com.example.entity.Student;
 import com.example.service.StudentService;
 
 @WebMvcTest(StudentController.class)
+@MockBean(JpaMetamodelMappingContext.class)
 public class StudentControllerTest {
 
     @Autowired
+    @NonNull
     private MockMvc mockMvc;
 
     @MockBean
+    @NonNull
     private StudentService studentService;
 
     @Test

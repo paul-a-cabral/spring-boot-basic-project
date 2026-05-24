@@ -23,8 +23,8 @@ public class ScheduledStudentCreator {
         this.emailDomain = emailDomain;
     }
 
-    // runs every 5 minutes
-    @Scheduled(fixedRate = 300000)
+    // runs every 2 minutes
+    @Scheduled(fixedRate = 120000)
     public void createRandomStudent() {
         try {
             String name = StudentGenerator.generateName();
