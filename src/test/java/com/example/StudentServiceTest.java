@@ -15,6 +15,10 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.never;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.entity.Student;
+import com.example.repository.StudentRepository;
+import com.example.service.StudentService;
+
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
 
