@@ -1,9 +1,0 @@
-com/example/repository/StudentRepository.class
-com/example/util/ScheduledStudentCreator.class
-com/example/entity/Student.class
-com/example/util/StudentGenerator.class
-com/example/Application.class
-com/example/controller/StudentController.class
-com/example/service/StudentService.class
-com/example/dto/StudentDto.class
-com/example/controller/HelloController.class
