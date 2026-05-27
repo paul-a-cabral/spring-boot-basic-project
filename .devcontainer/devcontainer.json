@@ -14,7 +14,7 @@
 	// Beware: features are not supported on all platforms and may have unintended side-effects.
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {
-			"version": "latest",
+			"version": "2l",
 			"installMaven": true,
 			"mavenVersion": "latest"
 		}, 
