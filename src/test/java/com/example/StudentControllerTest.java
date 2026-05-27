@@ -1,61 +1,56 @@
-package com.example.service;
+package com.example;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.junit.jupiter.api.Test;
+import static org.mockito.BDDMockito.given;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.controller.StudentController;
 import com.example.entity.Student;
-import com.example.repository.StudentRepository;
-import com.example.util.StudentGenerator;
+import com.example.service.StudentService;
 
-@Service
-public class StudentService {
+@WebMvcTest(StudentController.class)
+@MockBean(JpaMetamodelMappingContext.class)
+public class StudentControllerTest {
 
-    private final StudentRepository repository;
-    private final String emailDomain;
+    @Autowired
+    @NonNull
+    private MockMvc mockMvc;
 
-    public StudentService(StudentRepository repository,
-            @Value("${app.students.email.domain:example.com}") String emailDomain) {
-        this.repository = repository;
-        this.emailDomain = emailDomain;
+    @MockBean
+    @NonNull
+    private StudentService studentService;
+
+    @Test
+    void searchByEmailReturnsStudentWhenFound() throws Exception {
+        Student student = new Student(1L, "Jane Doe", "jane.doe@example.com");
+
+        given(studentService.findByEmail("jane.doe@example.com")).willReturn(Optional.of(student));
+
+        mockMvc.perform(get("/api/students/search")
+                        .param("email", "jane.doe@example.com")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("jane.doe@example.com")));
     }
 
-    public Student create(@NonNull Student student) {
-        return repository.save(student);
-    }
+    @Test
+    void searchByEmailReturnsNotFoundWhenMissing() throws Exception {
+        given(studentService.findByEmail("missing@example.com")).willReturn(Optional.empty());
 
-    public List<Student> list() {
-        return repository.findAll();
-    }
-
-    public Optional<Student> get(@NonNull Long id) {
-        return repository.findById(id);
-    }
-
-    public Optional<Student> findByEmail(String email) {
-        return repository.findByEmail(email);
-    }
-
-    public Optional<Student> updateName(@NonNull Long id, String name) {
-        return repository.findById(id)
-                .map(existing -> {
-                    String email = StudentGenerator.generateEmailFromName(name, emailDomain);
-                    existing.setName(name);
-                    existing.setEmail(email != null ? email : name.toLowerCase().replace(" ", "."));
-                    return repository.save(existing);
-                });
-    }
-
-    public boolean delete(@NonNull Long id) {
-        return repository.findById(id)
-                .map(existing -> {
-                    repository.delete(Objects.requireNonNull(existing));
-                    return true;
-                })
-                .orElse(false);
+        mockMvc.perform(get("/api/students/search")
+                        .param("email", "missing@example.com")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
