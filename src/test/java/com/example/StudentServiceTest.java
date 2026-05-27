@@ -23,13 +23,14 @@ import com.example.service.StudentService;
 public class StudentServiceTest {
 
     @Mock
-    @NonNull
     private StudentRepository repository;
 
     @SuppressWarnings("null")
+    @NonNull
     private StudentService studentService;
 
     @SuppressWarnings("null")
+    @NonNull
     private Student student;
 
     @BeforeEach
@@ -40,7 +41,7 @@ public class StudentServiceTest {
 
     @Test
     void createShouldSaveAndReturnStudent() {
-        given(repository.save(any(Student.class))).willReturn(student);
+        given(repository.save(student)).willReturn(student);
 
         Student result = studentService.create(student);
 
@@ -73,7 +74,7 @@ public class StudentServiceTest {
         Student updatedStudent = new Student(1L, "John Doe", "john.doe@example.com");
 
         given(repository.findById(1L)).willReturn(Optional.of(student));
-        given(repository.save(any(Student.class))).willReturn(updatedStudent);
+        given(repository.save(student)).willReturn(updatedStudent);
 
         Optional<Student> result = studentService.updateName(1L, "John Doe");
 
@@ -85,6 +86,7 @@ public class StudentServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void updateNameShouldReturnEmptyWhenNotFound() {
         given(repository.findById(1L)).willReturn(Optional.empty());
 
@@ -92,7 +94,7 @@ public class StudentServiceTest {
 
         assertThat(result).isEmpty();
         then(repository).should().findById(1L);
-        then(repository).should(never()).save(any());
+        then(repository).should(never()).save(any(Student.class));
     }
 
     @Test
@@ -107,6 +109,7 @@ public class StudentServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void deleteShouldReturnFalseWhenNotFound() {
         given(repository.findById(1L)).willReturn(Optional.empty());
 
@@ -114,7 +117,7 @@ public class StudentServiceTest {
 
         assertThat(result).isFalse();
         then(repository).should().findById(1L);
-        then(repository).should(never()).delete(any());
+        then(repository).should(never()).delete(any(Student.class));
     }
 
     @Test
