@@ -18,5 +18,12 @@
 			"installMaven": true,
 			"mavenVersion": "3.9"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"spring-boot.ls.check-spring-boot-version": false
+			}
+		}
 	}
 }
