@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -18,8 +19,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 import com.example.dto.StudentDto;
+import com.example.dto.CourseDto;
 import com.example.entity.Student;
 import com.example.service.StudentService;
+import com.example.service.CourseService;
+import com.example.service.EnrollmentService;
 import com.example.util.StudentGenerator;
 import java.util.Objects;
 
@@ -30,11 +34,17 @@ import org.springframework.beans.factory.annotation.Value;
 public class StudentController {
 
     private final StudentService studentService;
+    private final CourseService courseService;
+    private final EnrollmentService enrollmentService;
     private final String emailDomain;
 
     public StudentController(StudentService studentService,
+                             CourseService courseService,
+                             EnrollmentService enrollmentService,
                              @Value("${app.students.email.domain:example.com}") String emailDomain) {
         this.studentService = studentService;
+        this.courseService = courseService;
+        this.enrollmentService = enrollmentService;
         this.emailDomain = emailDomain;
     }
 
@@ -90,5 +100,14 @@ public class StudentController {
         return studentService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/courses")
+    public List<CourseDto> listCourses(@PathVariable @NonNull Long id) {
+        return enrollmentService.getCourseIdsForStudent(id).stream()
+                .map(courseService::get)
+                .flatMap(Optional::stream)
+                .map(CourseDto::fromEntity)
+                .toList();
     }
 }

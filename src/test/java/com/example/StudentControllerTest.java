@@ -17,7 +17,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.controller.StudentController;
 import com.example.entity.Student;
+import com.example.service.CourseService;
+import com.example.service.EnrollmentService;
 import com.example.service.StudentService;
+
+// @WebMvcTest(StudentController.class)
+// class StudentControllerTest {
+
+//     @MockBean
+//     private StudentService studentService;
+
+//     // Add these two mocks:
+//     @MockBean
+//     private CourseService courseService;
+
+//     @MockBean
+//     private EnrollmentService enrollmentService;
+
+//     // ... your tests
+// }
 
 @WebMvcTest(StudentController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -30,6 +48,12 @@ public class StudentControllerTest {
     @MockBean
     @NonNull
     private StudentService studentService;
+
+    @MockBean
+    private CourseService courseService;
+
+    @MockBean
+    private EnrollmentService enrollmentService;
 
     @Test
     void searchByEmailReturnsStudentWhenFound() throws Exception {

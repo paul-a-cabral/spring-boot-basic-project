@@ -17,11 +17,7 @@
 			"version": "2l",
 			"installMaven": true,
 			"mavenVersion": "latest"
-		}, 
-		"ghcr.io/siri404/devcontainer-ai-features/gemini-cli:1": {
-			"version": "latest"
 		}
-		
 	},
 	"customizations": {
 		"vscode": {
