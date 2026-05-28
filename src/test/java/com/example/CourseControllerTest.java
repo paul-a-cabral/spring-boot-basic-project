@@ -22,6 +22,8 @@ import static org.hamcrest.Matchers.containsString;
 import com.example.controller.CourseController;
 import com.example.entity.Course;
 import com.example.service.CourseService;
+import com.example.service.EnrollmentService;
+import com.example.service.StudentService;
 
 @WebMvcTest(CourseController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -34,6 +36,12 @@ public class CourseControllerTest {
     @MockBean
     @NonNull
     private CourseService courseService;
+
+    @MockBean
+    private StudentService studentService;
+
+    @MockBean
+    private EnrollmentService enrollmentService;
 
     @Test
     void listReturnsCourses() throws Exception {
