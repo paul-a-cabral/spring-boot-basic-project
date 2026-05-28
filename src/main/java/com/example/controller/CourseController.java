@@ -2,6 +2,7 @@ package com.example.controller;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
@@ -9,17 +10,24 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.dto.CourseDto;
+import com.example.dto.StudentDto;
 import com.example.entity.Course;
 import com.example.service.CourseService;
+import com.example.service.StudentService;
+import com.example.service.EnrollmentService;
 
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
 
     private final CourseService courseService;
+    private final StudentService studentService;
+    private final EnrollmentService enrollmentService;
 
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, StudentService studentService, EnrollmentService enrollmentService) {
         this.courseService = courseService;
+        this.studentService = studentService;
+        this.enrollmentService = enrollmentService;
     }
 
     @PostMapping
@@ -58,5 +66,23 @@ public class CourseController {
         return courseService.delete(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{id}/enroll/{studentId}")
+    public ResponseEntity<Void> enrollStudent(@PathVariable @NonNull Long id, @PathVariable @NonNull Long studentId) {
+        if (courseService.get(id).isEmpty() || studentService.get(studentId).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        enrollmentService.enroll(id, studentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/students")
+    public List<StudentDto> listStudents(@PathVariable @NonNull Long id) {
+        return enrollmentService.getStudentIdsInCourse(id).stream()
+                .map(studentService::get)
+                .flatMap(Optional::stream)
+                .map(StudentDto::fromEntity)
+                .toList();
     }
 }
