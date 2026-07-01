@@ -26,7 +26,6 @@
 				"spring-boot.ls.check-spring-boot-version": false
 			},
 			"extensions": [
-				"googlecloudtools.cloudcode", // Gemini
 				"vmware.vscode-boot-dev-pack" // Spring Boot Tools, Spring Boot Dashboard, and the Initializr
 			]
 		}
