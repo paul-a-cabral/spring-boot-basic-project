@@ -1,8 +1,6 @@
 package com.example.core;
 
 import org.springframework.stereotype.Component;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -44,7 +42,7 @@ public class MyBeanUser {
         newSingletonBean.performTask();
     }
 
-    @Scheduled(fixedRate = 12000)
+    // @Scheduled(fixedRate = 12000)
     public void doWork2() {
         System.out.println("----------------------------------------------------");
         System.out.println("1. Using injected MyPrototypeBean..");

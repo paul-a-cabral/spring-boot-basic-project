@@ -1,2 +1,5 @@
 jar location:
 /workspaces/spring-boot-basic-project/target/spring-boot-basic-1.0.0.jar
+
+gh auth loginnigolnigol
+nigol ghnigol

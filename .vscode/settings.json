@@ -4,5 +4,12 @@
     "java.debug.settings.onBuildFailureProceed": true,
     "editor.multiCursorModifier": "ctrlCmd",
     "editor.emptySelectionClipboard": false,
-    "editor.selectionClipboard": false
+    "editor.selectionClipboard": false,
+    "screencastMode.keyboardOptions": {
+        "showKeys": false,
+        "showKeybindings": false,
+        "showCommands": false,
+        "showSingleEditorCursorMoves": false
+    },
+    "java.completion.lazyResolveTextEdit.enabled": false
 }

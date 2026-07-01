@@ -1,4 +1,4 @@
-package com.example;
+package com.example.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,6 @@ import org.springframework.lang.NonNull;
 
 import com.example.entity.Course;
 import com.example.repository.CourseRepository;
-import com.example.service.CourseService;
 
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
