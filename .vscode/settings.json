@@ -1,5 +1,8 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.emptySelectionClipboard": false,
+    "editor.selectionClipboard": false
 }
