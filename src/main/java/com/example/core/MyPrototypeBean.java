@@ -1,7 +1,5 @@
 package com.example.core;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

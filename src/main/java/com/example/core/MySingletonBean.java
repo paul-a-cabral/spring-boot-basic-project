@@ -1,10 +1,6 @@
 package com.example.core;
 
-import org.springframework.stereotype.Component;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.scheduling.annotation.Scheduled;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
