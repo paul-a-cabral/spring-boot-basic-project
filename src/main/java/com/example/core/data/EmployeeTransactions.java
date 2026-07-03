@@ -29,7 +29,7 @@ public class EmployeeTransactions {
 
     @Transactional
     void withRuntimeException() {
-        // Start
+        // Start transaction
         EmployeeEntity employee1 = new EmployeeEntity();
         employee1.setName("Transaction-Employee-1");
         employee1.setSalary(60000.0);
