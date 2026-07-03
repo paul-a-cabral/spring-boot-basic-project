@@ -5,7 +5,6 @@ import com.example.entity.Student;
 import com.example.repository.CourseRepository;
 import com.example.repository.EnrollmentRepository;
 import com.example.repository.StudentRepository;
-import com.example.service.EnrollmentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

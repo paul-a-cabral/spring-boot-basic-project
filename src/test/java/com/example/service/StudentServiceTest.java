@@ -17,7 +17,6 @@ import org.springframework.lang.NonNull;
 
 import com.example.entity.Student;
 import com.example.repository.StudentRepository;
-import com.example.service.StudentService;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {

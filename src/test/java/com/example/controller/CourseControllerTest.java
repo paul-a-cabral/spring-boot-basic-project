@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.containsString;
 
-import com.example.controller.CourseController;
 import com.example.entity.Course;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;
