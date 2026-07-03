@@ -1,8 +1,5 @@
 package com.example.core.data;
 
-import com.example.core.data.MyEmployeeException;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +44,8 @@ public class EmployeeTransactions {
     }
 
     @Transactional
-   void withCheckedException() throws MyEmployeeException {
+    // Does not roll back
+    void withCheckedException() throws MyEmployeeException {
         // Start transaction
         EmployeeEntity employee1 = new EmployeeEntity();
         employee1.setName("Transaction-Employee-11");
@@ -62,6 +60,22 @@ public class EmployeeTransactions {
         saveWithConditionalCheckedException(employee2, true);
     }
 
+    @Transactional(rollbackFor = MyEmployeeException.class)
+      void withCheckedExceptionButRollsback() throws MyEmployeeException {
+        // Start transaction
+        EmployeeEntity employee1 = new EmployeeEntity();
+        employee1.setName("Transaction-Employee-31");
+        employee1.setSalary(60000.0);
+        saveWithConditionalCheckedException(employee1, false);
+
+        // Simulate an error (transactions roll back)
+
+        EmployeeEntity employee2 = new EmployeeEntity();
+        employee2.setName("Transaction-Employee-32");
+        employee2.setSalary(65000.0);
+        saveWithConditionalCheckedException(employee2, true);
+    }
+
     // Will roll back the transaction if the flag is true, otherwise it will commit
     // the transaction
     private void saveAndThrowRuntimeException(EmployeeEntity employee, boolean toThrowException) {
@@ -71,7 +85,8 @@ public class EmployeeTransactions {
         }
     }
 
-    // Unused cchecked-exceptionhecked-exception variant for future employee transaction handling.
+    // Unused cchecked-exceptionhecked-exception variant for future employee
+    // transaction handling.
     private void saveWithConditionalCheckedException(EmployeeEntity employee, boolean shouldThrow)
             throws MyEmployeeException {
         employeeDAO.save(employee);
