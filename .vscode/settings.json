@@ -1,15 +1,70 @@
 {
+<<<<<<< HEAD
+=======
+    "chat.mcp.gallery.enabled": true,
+    "editor.copilot.enable": {
+        "*": false
+    },
+    "editor.defaultFormatter": null,
+    "editor.dragAndDrop": false,
+    "editor.editContext": false,
+    "editor.emptySelectionClipboard": false,
+    "editor.fontSize": 15,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.inlineSuggest.experimental.emptyResponseInformation": false,
+    "editor.mouseWheelZoom": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.parameterHints.enabled": false,
+    "editor.quickSuggestions": {
+        "comments": "off",
+        "other": "off",
+        "strings": "off"
+    },
+    "editor.selectionClipboard": false,
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.wordBasedSuggestions": "off",
+    "files.autoSave": "off",
+    "files.refactoring.autoSave": false,
+    "githubPullRequests.createOnPublishBranch": "never",
+    "gitlens.gitCommands.skipConfirmations": [
+        "fetch:command",
+        "stash-push:command",
+        "switch:command"
+    ],
+>>>>>>> 10ef9c5 (Testing GPG signing)
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.debug.settings.onBuildFailureProceed": true,
+<<<<<<< HEAD
     "editor.multiCursorModifier": "ctrlCmd",
     "editor.emptySelectionClipboard": false,
     "editor.selectionClipboard": false,
+=======
+    "maven.terminal.favorites": [
+        {
+            "command": "clean compile install  -e -X",
+            "debug": false
+        },
+        {
+            "command": "spring-boot:run -Dspring-boot.run.fork=false",
+            "debug": false
+        }
+    ],
+    "maven.view": "hierarchical",
+>>>>>>> 10ef9c5 (Testing GPG signing)
     "screencastMode.keyboardOptions": {
         "showKeys": false,
         "showKeybindings": false,
         "showCommands": false,
         "showSingleEditorCursorMoves": false
     },
+<<<<<<< HEAD
     "java.completion.lazyResolveTextEdit.enabled": false
+=======
+    "settingsSync.ignoredExtensions": [],
+    "terminal.integrated.copyOnSelection": false,
+    "terminal.integrated.localEchoLatencyThreshold": 0,
+    "terminal.integrated.localEchoStyle": "dim"
+>>>>>>> 10ef9c5 (Testing GPG signing)
 }

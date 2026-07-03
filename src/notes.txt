@@ -1,5 +1,14 @@
 jar location:
 /workspaces/spring-boot-basic-project/target/spring-boot-basic-1.0.0.jar
 
-gh auth loginnigolnigol
-nigol ghnigol
+unset GITHUB_TOKEN
+gh auth login
+
+if unablenable to commit, fix:
+git config pull.rebase true
+
+or: commit (amend) 
+
+or: git commit --allow-empty -m "Testing GPG signing"
+
+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
