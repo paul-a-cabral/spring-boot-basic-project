@@ -30,7 +30,6 @@
         "stash-push:command",
         "switch:command"
     ],
-    "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.debug.settings.onBuildFailureProceed": true,
     "maven.terminal.favorites": [
@@ -53,5 +52,6 @@
     "settingsSync.ignoredExtensions": [],
     "terminal.integrated.copyOnSelection": false,
     "terminal.integrated.localEchoLatencyThreshold": 0,
-    "terminal.integrated.localEchoStyle": "dim"
+    "terminal.integrated.localEchoStyle": "dim",
+    "java.compile.nullAnalysis.mode": "disabled"
 }

@@ -1,8 +1,6 @@
 package com.example.controller;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -106,7 +104,7 @@ public class StudentController {
     public List<CourseDto> listCourses(@PathVariable @NonNull Long id) {
         return enrollmentService.getCourseIdsForStudent(id).stream()
                 .map(courseService::get)
-                .flatMap(Optional::stream)
+                .flatMap(opt -> opt.stream())
                 .map(CourseDto::fromEntity)
                 .toList();
     }
