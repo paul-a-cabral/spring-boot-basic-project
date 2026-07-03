@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -38,8 +37,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 // }
 
 @WebMvcTest(StudentController.class)
-@MockBean(JpaMetamodelMappingContext.class)
 public class StudentControllerTest {
+
+    @MockitoBean 
+    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
     @Autowired
     @NonNull
