@@ -9,9 +9,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class EmployeeUtil {
 
     private final EmployeeDAO employeeDAO;
+    private final EmployeeTransactions transactions;
 
-    public EmployeeUtil(EmployeeDAO employeeDAO) {
+    public EmployeeUtil(EmployeeDAO employeeDAO, EmployeeTransactions transactions) {
         this.employeeDAO = employeeDAO;
+        this.transactions = transactions;
     }
 
     @EventListener(
@@ -28,9 +30,30 @@ public class EmployeeUtil {
             employee.setSalary(50000.0 + (i * 1000)); // Example salary
             employeeDAO.save(employee);
         }
+
+        System.out.println("### Performing a rolled back transaction...");
+        System.out.println("[BEFORE] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
+        try {
+            transactions.withRuntimeException();
+        } catch (Exception e) {
+            System.out.println("Transaction failed: " + e.getMessage());
+        }
+        System.out.println("[AFTER] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
+        System.out.println("Expecting [AFTER] = [BEFORE] (the two save operations were rolled back)");
+
+        System.out.println("\n### Performing a committed transaction...");
+        System.out
+                .println("[BEFORE] There areare currently " + employeeDAO.findAll().size() + " employee(s) in the db");
+        try {
+            transactions.withCheckedException();
+        } catch (Exception e) {
+            System.out.println("Transaction failed: " + e.getMessage());
+        }
+        System.out.println("[AFTER] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
+        System.out.println("Expecting [AFTER]  = [BEFORE] + 2 (the two save operations were committed)");
     }
 
-    @Scheduled(fixedRate = 15000)
+    // @Scheduled(fixedRate = 15000)
     public void printAllEmployees() {
         System.out.println(">>> Printing all employees from the database...");
         employeeDAO.findAll().forEach(employee -> {
