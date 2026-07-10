@@ -2,7 +2,6 @@ package com.example.controller;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +80,7 @@ public class CourseController {
     public List<StudentDto> listStudents(@PathVariable @NonNull Long id) {
         return enrollmentService.getStudentIdsInCourse(id).stream()
                 .map(studentService::get)
-                .flatMap(Optional::stream)
+                .flatMap(opt -> opt.stream())
                 .map(StudentDto::fromEntity)
                 .toList();
     }
