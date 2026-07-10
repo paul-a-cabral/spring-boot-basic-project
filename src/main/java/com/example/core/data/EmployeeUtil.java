@@ -22,9 +22,6 @@ public class EmployeeUtil {
         for (int i = 1; i <= 10; i++) {
             EmployeeEntity employee = new EmployeeEntity();
             employee.setName("Employee-" + i);
-            // yralaaaralaaaralaaaralaaaralaaaralaaaralaaaralaaaralaaa double salary =
-            // yralaaaaa
-            // geygeygeygeygeygandomly ge
             employee.setSalary(50000.0 + (i * 1000)); // Example salary
             employeeDAO.save(employee);
         }
@@ -50,17 +47,16 @@ public class EmployeeUtil {
         System.out.println("[AFTER] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
         System.out.println("Expecting [AFTER]  = [BEFORE] + 2 (the two save operations were committed)");
 
-        System.out.println("\n### Performing a rolled back transaction on checked exception");
+        System.out.println("\n### Performing a rolled back tkransaction per annotation...");
         System.out
                 .println("[BEFORE] There areare currently " + employeeDAO.findAll().size() + " employee(s) in the db");
         try {
-            transactions.withCheckedExceptionButRollsback();
+            transactions. withCheckedExceptionButRollsback();
         } catch (Exception e) {
             System.out.println("Transaction failed: " + e.getMessage());
         }
         System.out.println("[AFTER] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
-        System.out.println("Expecting [AFTER]  = [BEFORE] (the two save operations were not committed)");
-
+        System.out.println("Expecting [AFTER]  = [BEFORE] (the two save operations were committed)");
     }
 
     // @Scheduled(fixedRate = 15000)
@@ -69,10 +65,14 @@ public class EmployeeUtil {
         employeeDAO.findAll().forEach(employee -> {
             System.out.println("Employee ID: " + employee.getId() + ", Name: " + employee.getName() + ", Salary: "
                     + employee.getSalary());
+            System.out.println("Employee ID: " + employee.getId() + ", Name: " + employee.getName() + ", Salary: "
+                    + employee.getSalary());
         });
 
         System.out.println(">>> Printing employees with salary >= 55000.0 ordered by ID...");
         employeeDAO.findBySalaryGreaterThanEqualOrderByIdAsc(55000.0).forEach(employee -> {
+            System.out.println("Employee ID: " + employee.getId() + ", Name: " + employee.getName() + ", Salary: "
+                    + employee.getSalary());
             System.out.println("Employee ID: " + employee.getId() + ", Name: " + employee.getName() + ", Salary: "
                     + employee.getSalary());
         });

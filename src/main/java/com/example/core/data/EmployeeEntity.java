@@ -4,17 +4,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
+@Entity(name = "Employee")
+@Table(name = "Employee")
 @EntityListeners(AuditingEntityListener.class)
 public class EmployeeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String name; 
     private Double salary;
 
     public EmployeeEntity() {
