@@ -39,7 +39,7 @@ public class CourseService {
     public boolean delete(@NonNull Long id) {
         return repository.findById(id)
                 .map(existing -> {
-                    repository.delete(existing);
+                    repository.deleteById(id);
                     return true;
                 })
                 .orElse(false);

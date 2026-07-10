@@ -6,7 +6,6 @@ import com.example.entity.Student;
 import com.example.repository.CourseRepository;
 import com.example.repository.EnrollmentRepository;
 import com.example.repository.StudentRepository;
-import com.example.service.EnrollmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

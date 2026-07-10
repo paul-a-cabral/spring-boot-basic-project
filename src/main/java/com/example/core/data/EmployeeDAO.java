@@ -10,6 +10,7 @@ import org.springframework.data.repository.RepositoryDefinition;
 )
 public interface EmployeeDAO extends EmployeeCustomDAO {
     // This interface extends the custom implementation to provide additional query methods
-    public void save(EmployeeEntity employee);
+    public EmployeeEntity save(EmployeeEntity employee);
     public List<EmployeeEntity> findAll();
+    public java.util.Optional<EmployeeEntity> findById(Long id);
 }
