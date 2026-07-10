@@ -3,7 +3,7 @@ package com.example.core.data;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.example.core.annotations.LogExecutionTime;
 
 @Component
 public class EmployeeUtil {
@@ -17,7 +17,8 @@ public class EmployeeUtil {
     }
 
     @EventListener(classes = ApplicationReadyEvent.class)
-    public void insertTenEmployees() {
+    @LogExecutionTime
+    public void doWork() {
         System.out.println("### Inserting 10 employees into the database...");
 
         for (int i = 1; i <= 10; i++) {
@@ -57,7 +58,8 @@ public class EmployeeUtil {
             System.out.println("Transaction failed: " + e.getMessage());
         }
         System.out.println("[AFTER] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
-        System.out.println("Expecting [AFTER]  = [BEFORE] (the two save operations were committed)");
+        System.out.println("Expecting [AFTER]  = [BEFORE] (the two save operations were not committed)");
+
     }
 
     // @Scheduled(fixedRate = 15000)

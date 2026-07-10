@@ -9,38 +9,39 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.containsString;
 
-import com.example.controller.CourseController;
 import com.example.entity.Course;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;
 import com.example.service.StudentService;
 
 @WebMvcTest(CourseController.class)
-@MockBean(JpaMetamodelMappingContext.class)
 public class CourseControllerTest {
+
+    @MockitoBean 
+    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
     @Autowired
     @NonNull
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     @NonNull
     private CourseService courseService;
 
-    @MockBean
+    @MockitoBean
     private StudentService studentService;
 
-    @MockBean
+    @MockitoBean
     private EnrollmentService enrollmentService;
 
     @Test

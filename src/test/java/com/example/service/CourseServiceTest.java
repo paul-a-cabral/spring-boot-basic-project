@@ -95,6 +95,6 @@ public class CourseServiceTest {
         boolean result = courseService.delete(1L);
 
         assertThat(result).isTrue();
-        then(repository).should().delete(course);
+        then(repository).should().deleteById(1L);
     }
 }

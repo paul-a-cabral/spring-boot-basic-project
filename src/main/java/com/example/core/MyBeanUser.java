@@ -2,7 +2,6 @@ package com.example.core;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.scheduling.annotation.Scheduled;
 
 @Component
 public class MyBeanUser {

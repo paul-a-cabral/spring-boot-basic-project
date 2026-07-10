@@ -1,8 +1,5 @@
 package com.example.core.data;
 
-import com.example.core.data.MyEmployeeException;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +44,7 @@ public class EmployeeTransactions {
     }
 
     @Transactional
+    // Does not roll back
     void withCheckedException() throws MyEmployeeException {
         // Start transaction
         EmployeeEntity employee1 = new EmployeeEntity();
@@ -66,14 +64,14 @@ public class EmployeeTransactions {
     void withCheckedExceptionButRollsback() throws MyEmployeeException {
         // Start transaction
         EmployeeEntity employee1 = new EmployeeEntity();
-        employee1.setName("Transaction-Employee-11");
+        employee1.setName("Transaction-Employee-31");
         employee1.setSalary(60000.0);
         saveWithConditionalCheckedException(employee1, false);
 
-        // Simulate an error (transactions should commit)
+        // Simulate an error (transactions roll back)
 
         EmployeeEntity employee2 = new EmployeeEntity();
-        employee2.setName("Transaction-Employee-12");
+        employee2.setName("Transaction-Employee-32");
         employee2.setSalary(65000.0);
         saveWithConditionalCheckedException(employee2, true);
     }

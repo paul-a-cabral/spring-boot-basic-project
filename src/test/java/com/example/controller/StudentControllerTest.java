@@ -1,12 +1,11 @@
 package com.example.controller;
 
 import java.util.Optional;
-
+import static org.hamcrest.Matchers.containsString;
 import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -15,44 +14,46 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.controller.StudentController;
 import com.example.entity.Student;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;
 import com.example.service.StudentService;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 // @WebMvcTest(StudentController.class)
 // class StudentControllerTest {
 
-//     @MockBean
+//     @MockitoBean
 //     private StudentService studentService;
 
 //     // Add these two mocks:
-//     @MockBean
+//     @MockitoBean
 //     private CourseService courseService;
 
-//     @MockBean
+//     @MockitoBean
 //     private EnrollmentService enrollmentService;
 
 //     // ... your tests
 // }
 
 @WebMvcTest(StudentController.class)
-@MockBean(JpaMetamodelMappingContext.class)
 public class StudentControllerTest {
+
+    @MockitoBean 
+    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
     @Autowired
     @NonNull
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     @NonNull
     private StudentService studentService;
 
-    @MockBean
+    @MockitoBean
     private CourseService courseService;
 
-    @MockBean
+    @MockitoBean
     private EnrollmentService enrollmentService;
 
     @Test
@@ -65,7 +66,7 @@ public class StudentControllerTest {
                         .param("email", "jane.doe@example.com")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("jane.doe@example.com")));
+                .andExpect(content().string(containsString("jane.doe@example.com")));
     }
 
     @Test
