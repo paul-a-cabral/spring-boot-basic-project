@@ -18,13 +18,18 @@ public class LogExecutionTimeAspect {
     public Object logTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
 
+        String methodName = joinPoint.getSignature().getName();
+        String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
+
+        logger.info("\n****(logger.log) Executing method [{}.{}]...", className, methodName);
+
         // 1. Execute the actual method
         Object proceed = joinPoint.proceed(); 
 
         long executionTime = System.currentTimeMillis() - startTime;
 
         // 2. Log the class name, method name, and execution duration
-        logger.info("****(logger.log) Method [{}.{}] executed in {} ms", 
+        logger.info("\n****(logger.log) Method [{}.{}] executed in {} ms", 
                 joinPoint.getSignature().getDeclaringType().getSimpleName(),
                 joinPoint.getSignature().getName(), 
                 executionTime);
