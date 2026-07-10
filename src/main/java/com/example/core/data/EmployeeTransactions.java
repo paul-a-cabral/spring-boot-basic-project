@@ -61,7 +61,7 @@ public class EmployeeTransactions {
     }
 
     @Transactional(rollbackFor = MyEmployeeException.class)
-      void withCheckedExceptionButRollsback() throws MyEmployeeException {
+    void withCheckedExceptionButRollsback() throws MyEmployeeException {
         // Start transaction
         EmployeeEntity employee1 = new EmployeeEntity();
         employee1.setName("Transaction-Employee-31");
