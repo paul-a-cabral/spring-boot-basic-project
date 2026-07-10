@@ -32,7 +32,7 @@ public class EmployeeTransactions {
 
     @Transactional
     void withRuntimeException() {
-        // Start transaction
+        // Start
         EmployeeEntity employee1 = new EmployeeEntity();
         employee1.setName("Transaction-Employee-1");
         employee1.setSalary(60000.0);
@@ -47,7 +47,23 @@ public class EmployeeTransactions {
     }
 
     @Transactional
-   void withCheckedException() throws MyEmployeeException {
+    void withCheckedException() throws MyEmployeeException {
+        // Start transaction
+        EmployeeEntity employee1 = new EmployeeEntity();
+        employee1.setName("Transaction-Employee-11");
+        employee1.setSalary(60000.0);
+        saveWithConditionalCheckedException(employee1, false);
+
+        // Simulate an error (transactions should commit)
+
+        EmployeeEntity employee2 = new EmployeeEntity();
+        employee2.setName("Transaction-Employee-12");
+        employee2.setSalary(65000.0);
+        saveWithConditionalCheckedException(employee2, true);
+    }
+
+    @Transactional(rollbackFor = MyEmployeeException.class)
+    void withCheckedExceptionButRollsback() throws MyEmployeeException {
         // Start transaction
         EmployeeEntity employee1 = new EmployeeEntity();
         employee1.setName("Transaction-Employee-11");
@@ -71,7 +87,8 @@ public class EmployeeTransactions {
         }
     }
 
-    // Unused cchecked-exceptionhecked-exception variant for future employee transaction handling.
+    // Unused cchecked-exceptionhecked-exception variant for future employee
+    // transaction handling.
     private void saveWithConditionalCheckedException(EmployeeEntity employee, boolean shouldThrow)
             throws MyEmployeeException {
         employeeDAO.save(employee);
