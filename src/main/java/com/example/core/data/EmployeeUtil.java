@@ -3,6 +3,7 @@ package com.example.core.data;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import com.example.core.annotations.LogExecutionTime;
 
 @Component
 public class EmployeeUtil {
@@ -16,7 +17,8 @@ public class EmployeeUtil {
     }
 
     @EventListener(classes = ApplicationReadyEvent.class)
-    public void insertTenEmployees() {
+    @LogExecutionTime
+    public void doWork() {
         System.out.println("### Inserting 10 employees into the database...");
 
         for (int i = 1; i <= 10; i++) {
