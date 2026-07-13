@@ -184,7 +184,8 @@ class EmployeeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmployeeDto)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.id").value("ID must be null when creating or replacing an employee"));
+        .andExpect(
+            jsonPath("$.id").value("ID must be null when creating or replacing an employee"));
   }
 
   @Test

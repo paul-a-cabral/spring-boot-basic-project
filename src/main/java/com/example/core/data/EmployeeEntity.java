@@ -4,8 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity(name = "Employee")
@@ -13,42 +13,42 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class EmployeeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name; 
-    private Double salary;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public EmployeeEntity() {
-    }
+  private String name;
+  private Double salary;
 
-    public EmployeeEntity(Long id, String name, Double salary) {
-        this.id = id;
-        this.name = name;
-        this.salary = salary;
-    }
+  public EmployeeEntity() {}
 
-    public Long getId() {
-        return id;
-    }
+  public EmployeeEntity(Long id, String name, Double salary) {
+    this.id = id;
+    this.name = name;
+    this.salary = salary;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public Double getSalary() {
-        return salary;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setSalary(Double salary) {
-        this.salary = salary;
-    }
+  public Double getSalary() {
+    return salary;
+  }
+
+  public void setSalary(Double salary) {
+    this.salary = salary;
+  }
 }

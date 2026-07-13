@@ -1,15 +1,7 @@
 package com.example.controller;
 
-import java.util.Optional;
 import static org.hamcrest.Matchers.containsString;
-import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
-import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,7 +10,15 @@ import com.example.entity.Student;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;
 import com.example.service.StudentService;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 // @WebMvcTest(StudentController.class)
 // class StudentControllerTest {
@@ -39,43 +39,40 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @WebMvcTest(StudentController.class)
 public class StudentControllerTest {
 
-    @MockitoBean 
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+  @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-    @Autowired
-    @NonNull
-    private MockMvc mockMvc;
+  @Autowired @NonNull private MockMvc mockMvc;
 
-    @MockitoBean
-    @NonNull
-    private StudentService studentService;
+  @MockitoBean @NonNull private StudentService studentService;
 
-    @MockitoBean
-    private CourseService courseService;
+  @MockitoBean private CourseService courseService;
 
-    @MockitoBean
-    private EnrollmentService enrollmentService;
+  @MockitoBean private EnrollmentService enrollmentService;
 
-    @Test
-    void searchByEmailReturnsStudentWhenFound() throws Exception {
-        Student student = new Student(1L, "Jane Doe", "jane.doe@example.com");
+  @Test
+  void searchByEmailReturnsStudentWhenFound() throws Exception {
+    Student student = new Student(1L, "Jane Doe", "jane.doe@example.com");
 
-        given(studentService.findByEmail("jane.doe@example.com")).willReturn(Optional.of(student));
+    given(studentService.findByEmail("jane.doe@example.com")).willReturn(Optional.of(student));
 
-        mockMvc.perform(get("/api/students/search")
-                        .param("email", "jane.doe@example.com")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("jane.doe@example.com")));
-    }
+    mockMvc
+        .perform(
+            get("/api/students/search")
+                .param("email", "jane.doe@example.com")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("jane.doe@example.com")));
+  }
 
-    @Test
-    void searchByEmailReturnsNotFoundWhenMissing() throws Exception {
-        given(studentService.findByEmail("missing@example.com")).willReturn(Optional.empty());
+  @Test
+  void searchByEmailReturnsNotFoundWhenMissing() throws Exception {
+    given(studentService.findByEmail("missing@example.com")).willReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/students/search")
-                        .param("email", "missing@example.com")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
+    mockMvc
+        .perform(
+            get("/api/students/search")
+                .param("email", "missing@example.com")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
 }
