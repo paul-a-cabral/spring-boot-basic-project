@@ -1,10 +1,8 @@
 package com.example.core.exception;
 
 import com.example.core.interceptor.RequestContext;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,8 +33,8 @@ public class CoreExceptionHandler {
   // parameter in a GET request.
   @ExceptionHandler(MissingServletRequestParameterException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map<String, String> handleMissingParam(MissingServletRequestParameterException ex,
-      HttpServletRequest request) {
+  public Map<String, String> handleMissingParam(
+      MissingServletRequestParameterException ex, HttpServletRequest request) {
     Map<String, String> errors = new HashMap<>();
     errors.put(
         "error",
@@ -56,19 +53,23 @@ public class CoreExceptionHandler {
   // body or with malformed JSON.
   @ExceptionHandler(HttpMessageNotReadableException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map<String, String> handleMissingOrMalformedBody(HttpMessageNotReadableException ex,
-      HttpServletRequest request) throws IOException {
+  public Map<String, String> handleMissingOrMalformedBody(
+      HttpMessageNotReadableException ex, HttpServletRequest request) throws IOException {
     Map<String, String> errors = new HashMap<>();
 
     // You can check the error message to see if it was completely empty or just
     // malformed
     if (ex.getMessage() != null && ex.getMessage().contains("Required request body is missing")) {
       errors.put(
-          "error", String.format("%s The required request body payload is entirely missing.", ERROR_MSG_PREFIX));
+          "error",
+          String.format(
+              "%s The required request body payload is entirely missing.", ERROR_MSG_PREFIX));
     } else {
       errors.put(
           "error",
-          String.format("%s The request body is malformed or contains invalid JSON syntax.", ERROR_MSG_PREFIX));
+          String.format(
+              "%s The request body is malformed or contains invalid JSON syntax.",
+              ERROR_MSG_PREFIX));
     }
 
     if (RequestContext.isDetailedError()) {
@@ -82,16 +83,19 @@ public class CoreExceptionHandler {
       EmployeeNotFoundException ex, HandlerMethod handlerMethod) {
 
     // Extract the method name safely
-    String methodName = (handlerMethod != null) ? handlerMethod.getMethod().getName() : "UnknownMethod";
+    String methodName =
+        (handlerMethod != null) ? handlerMethod.getMethod().getName() : "UnknownMethod";
     // Optional: Extract the controller class name too
-    String className = (handlerMethod != null) ? handlerMethod.getBeanType().getSimpleName() : "UnknownClass";
+    String className =
+        (handlerMethod != null) ? handlerMethod.getBeanType().getSimpleName() : "UnknownClass";
 
-    ErrorResponse errorDetails = new ErrorResponse(
-        HttpStatus.NOT_FOUND.value(),
-        HttpStatus.NOT_FOUND.getReasonPhrase(),
-        String.format(
-            "%s Error in %s.%s(): %s",
-            ERROR_MSG_PREFIX, className, methodName, ex.getMessage()));
+    ErrorResponse errorDetails =
+        new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            String.format(
+                "%s Error in %s.%s(): %s",
+                ERROR_MSG_PREFIX, className, methodName, ex.getMessage()));
 
     return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
   }
@@ -99,15 +103,17 @@ public class CoreExceptionHandler {
   // Catches @RequestBody validation failures
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map<String, String> handleRequestBodyError(MethodArgumentNotValidException ex,
-      HttpServletRequest request) throws IOException {
+  public Map<String, String> handleRequestBodyError(
+      MethodArgumentNotValidException ex, HttpServletRequest request) throws IOException {
     Map<String, String> errors = new HashMap<>();
     Map<String, String> fieldErrors = new HashMap<>();
     ex.getBindingResult()
         .getFieldErrors()
         .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
 
-    errors.put("error", String.format("%s Validation failed for fields: %s", ERROR_MSG_PREFIX, fieldErrors));
+    errors.put(
+        "error",
+        String.format("%s Validation failed for fields: %s", ERROR_MSG_PREFIX, fieldErrors));
 
     if (RequestContext.isDetailedError()) {
       errors.put("fieldErrors", fieldErrors.toString());
@@ -120,8 +126,8 @@ public class CoreExceptionHandler {
   // Handles Validation Violations (e.g., -5 passed to a @Min(1) Long)
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map<String, String> handleParameterError(ConstraintViolationException ex,
-      HttpServletRequest request) {
+  public Map<String, String> handleParameterError(
+      ConstraintViolationException ex, HttpServletRequest request) {
     Map<String, String> errors = new HashMap<>();
     Map<String, String> paramErrors = new HashMap<>();
     ex.getConstraintViolations()
@@ -132,7 +138,9 @@ public class CoreExceptionHandler {
               paramErrors.put(paramName, violation.getMessage());
             });
 
-    errors.put("error", String.format("%s Validation failed for parameters: %s", ERROR_MSG_PREFIX, paramErrors));
+    errors.put(
+        "error",
+        String.format("%s Validation failed for parameters: %s", ERROR_MSG_PREFIX, paramErrors));
 
     if (RequestContext.isDetailedError()) {
       errors.put("validationErrors", paramErrors.toString());
@@ -145,8 +153,8 @@ public class CoreExceptionHandler {
   // That is, bad data types (e.g., text passed instead of a number)
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map<String, String> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
-      HttpServletRequest request) {
+  public Map<String, String> handleTypeMismatch(
+      MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
     Map<String, String> errors = new HashMap<>();
     errors.put(
         "error",
@@ -164,13 +172,15 @@ public class CoreExceptionHandler {
   /** Generic handler for unexpected runtime errors. */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public Map<String, String> handleGeneralException(Exception ex, HandlerMethod handlerMethod,
-      HttpServletRequest request) {
+  public Map<String, String> handleGeneralException(
+      Exception ex, HandlerMethod handlerMethod, HttpServletRequest request) {
     Map<String, String> errors = new HashMap<>();
     // Extract the method name safely
-    String methodName = (handlerMethod != null) ? handlerMethod.getMethod().getName() : "UnknownMethod";
+    String methodName =
+        (handlerMethod != null) ? handlerMethod.getMethod().getName() : "UnknownMethod";
     // Optional: Extract the controller class name too
-    String className = (handlerMethod != null) ? handlerMethod.getBeanType().getSimpleName() : "UnknownClass";
+    String className =
+        (handlerMethod != null) ? handlerMethod.getBeanType().getSimpleName() : "UnknownClass";
     errors.put(
         "error",
         String.format(
@@ -203,15 +213,21 @@ public class CoreExceptionHandler {
         .collect(Collectors.joining(", ", "{", "}"));
   }
 
-  private Map<String, String> addErrorDetails(Map<String, String> details, Exception ex, HttpServletRequest request) {
+  private Map<String, String> addErrorDetails(
+      Map<String, String> details, Exception ex, HttpServletRequest request) {
     return addErrorDetails(details, ex, request, false);
   }
 
-  private Map<String, String> addErrorDetails(Map<String, String> details, Exception ex, HttpServletRequest request,
+  private Map<String, String> addErrorDetails(
+      Map<String, String> details,
+      Exception ex,
+      HttpServletRequest request,
       boolean withStackTrace) {
     details.put("exception", ex.getClass().getSimpleName());
-    details.put("status", String.format("%d (%s)", HttpStatus.BAD_REQUEST.value(),
-        HttpStatus.BAD_REQUEST.getReasonPhrase()));
+    details.put(
+        "status",
+        String.format(
+            "%d (%s)", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase()));
     details.put("message", ex.getMessage());
 
     details.put("uri", request.getRequestURI());
@@ -227,7 +243,9 @@ public class CoreExceptionHandler {
     details.put("userAgent", request.getHeader("User-Agent"));
     details.put("parameterMap", flattenParameterMap(request.getParameterMap()));
     try {
-      details.put("body", request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual));
+      details.put(
+          "body",
+          request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual));
       details.put("payload", getPayload(request));
     } catch (IOException e) {
     }
