@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.core.aspects.LogExecutionTimeAspect;
+import com.example.core.aspect.LogExecutionTimeAspect;
 import com.example.core.data.EmployeeDAO;
 import com.example.core.dto.EmployeeDto;
 import com.example.core.data.EmployeeEntity;

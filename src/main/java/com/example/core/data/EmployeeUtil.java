@@ -3,7 +3,8 @@ package com.example.core.data;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import com.example.core.annotations.LogExecutionTime;
+
+import com.example.core.annotation.LogExecutionTime;
 
 @Component
 public class EmployeeUtil {

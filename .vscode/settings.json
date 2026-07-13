@@ -22,7 +22,7 @@
     "editor.selectionClipboard": false,
     "editor.suggestOnTriggerCharacters": false,
     "editor.wordBasedSuggestions": "off",
-    "files.autoSave": "off",
+    "files.autoSave": "afterDelay",
     "files.refactoring.autoSave": false,
     "githubPullRequests.createOnPublishBranch": "never",
     "gitlens.gitCommands.skipConfirmations": [
