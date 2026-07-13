@@ -14,13 +14,12 @@ import org.springframework.stereotype.Service;
 public class StudentService {
 
   private final StudentRepository repository;
-  private final String emailDomain;
 
-  public StudentService(
-      StudentRepository repository,
-      @Value("${app.students.email.domain:example.com}") String emailDomain) {
+  @Value("${students.email.domain}")
+  private String emailDomain;
+
+  public StudentService(StudentRepository repository) {
     this.repository = repository;
-    this.emailDomain = emailDomain;
   }
 
   public Student create(@NonNull Student student) {

@@ -3,11 +3,14 @@
     "editor.copilot.enable": {
         "*": false
     },
-    "editor.defaultFormatter": null,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.dragAndDrop": false,
     "editor.editContext": false,
     "editor.emptySelectionClipboard": false,
     "editor.fontSize": 15,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
     "editor.formatOnPaste": false,
     "editor.formatOnSaveMode": "modificationsIfAvailable",
     "editor.inlineSuggest.experimental.emptyResponseInformation": false,
@@ -22,7 +25,7 @@
     "editor.selectionClipboard": false,
     "editor.suggestOnTriggerCharacters": false,
     "editor.wordBasedSuggestions": "off",
-    "files.autoSave": "afterDelay",
+    "files.autoSave": "off",
     "files.refactoring.autoSave": false,
     "githubPullRequests.createOnPublishBranch": "never",
     "gitlens.gitCommands.skipConfirmations": [
@@ -53,5 +56,8 @@
     "terminal.integrated.copyOnSelection": false,
     "terminal.integrated.localEchoLatencyThreshold": 0,
     "terminal.integrated.localEchoStyle": "dim",
-    "java.compile.nullAnalysis.mode": "disabled"
+    "java.compile.nullAnalysis.mode": "disabled",
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java"
+    }
 }

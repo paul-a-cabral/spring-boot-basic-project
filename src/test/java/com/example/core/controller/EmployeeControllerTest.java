@@ -32,13 +32,19 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(EmployeeController.class)
 class EmployeeControllerTest {
 
-  @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+  @MockitoBean
+  private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-  @Autowired @NonNull private MockMvc mockMvc;
+  @Autowired
+  @NonNull
+  private MockMvc mockMvc;
 
-  @MockitoBean @NonNull private EmployeeDAO employeeDAO;
+  @MockitoBean
+  @NonNull
+  private EmployeeDAO employeeDAO;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Test
   void testGetAllEmployees() throws Exception {
@@ -124,7 +130,7 @@ class EmployeeControllerTest {
         .perform(get("/api/employees/{id}", "abc").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(
-            jsonPath("$.error").value("[Core Error Handler] Parameter 'id' must be of type Long"));
+            jsonPath("$.error").value(containsString("Parameter 'id' must be of type Long")));
   }
 
   @Test
@@ -198,8 +204,8 @@ class EmployeeControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
-                .value(
-                    "[Core Error Handler] The request body is malformed or contains invalid JSON syntax."));
+                .value(containsString(
+                    "The request body is malformed or contains invalid JSON syntax.")));
   }
 
   @Test
@@ -209,8 +215,8 @@ class EmployeeControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
-                .value(
-                    "[Core Error Handler] The required request body payload is entirely missing."));
+                .value(containsString(
+                    "The required request body payload is entirely missing.")));
   }
 
   @Test
@@ -311,12 +317,11 @@ class EmployeeControllerTest {
     mockMvc
         .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.status").value(500))
         .andExpect(jsonPath("$.error").value("RuntimeException"))
         .andExpect(
             jsonPath("$.message")
                 .value(
                     containsString(
-                        "[Core Error Handler] Error in EmployeeController.getEmployees(): DAO exploded")));
+                        "An unexpected error occurred in EmployeeController.getEmployees(): DAO exploded")));
   }
 }

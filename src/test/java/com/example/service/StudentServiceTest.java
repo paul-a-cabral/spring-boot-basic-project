@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.lang.NonNull;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
@@ -28,7 +29,8 @@ public class StudentServiceTest {
 
   @BeforeEach
   void setUp() {
-    studentService = new StudentService(repository, "example.com");
+    studentService = new StudentService(repository);
+    ReflectionTestUtils.setField(studentService, "emailDomain", "example.com");
     student = new Student(1L, "Jane Doe", "jane.doe@example.com");
   }
 
