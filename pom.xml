@@ -23,6 +23,7 @@
     <properties>
         <java.version>21</java.version>
         <spring-boot.report.suppress-oss-warnings>true</spring-boot.report.suppress-oss-warnings>
+        <app.server.port>8181</app.server.port>
     </properties>
 
     <dependencies>
@@ -85,6 +86,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <arguments>
+                        <argument>--server.port=${app.server.port}</argument>
+                    </arguments>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

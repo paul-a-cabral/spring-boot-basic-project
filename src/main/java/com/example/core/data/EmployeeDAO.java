@@ -13,4 +13,5 @@ public interface EmployeeDAO extends EmployeeCustomDAO {
     public EmployeeEntity save(EmployeeEntity employee);
     public List<EmployeeEntity> findAll();
     public java.util.Optional<EmployeeEntity> findById(Long id);
+    public boolean existsById(Long id);
 }

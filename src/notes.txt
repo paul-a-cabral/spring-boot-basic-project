@@ -1,3 +1,5 @@
+pkill -f "com.example.Application|spring-boot:run"
+
 jar location:
 /workspaces/spring-boot-basic-project/target/spring-boot-basic-1.0.0.jar
 

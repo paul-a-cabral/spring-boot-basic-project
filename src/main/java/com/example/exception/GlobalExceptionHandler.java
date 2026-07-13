@@ -10,9 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.HandlerMethod;
-
-import com.example.core.exception.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -51,32 +48,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Generic handler for unexpected runtime errors.
-     */
-    // @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGeneralException(Exception ex, HandlerMethod handlerMethod) {
-        // Extract the method name safely
-        String methodName = (handlerMethod != null) ? handlerMethod.getMethod().getName() : "UnknownMethod";
-        // Optional: Extract the controller class name too
-        String className = (handlerMethod != null) ? handlerMethod.getBeanType().getSimpleName() : "UnknownClass";
-
-        ErrorResponse errorDetails = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getClass().getSimpleName(),
-                String.format("Global Handler: Error in %s.%s(): %s ",
-                        className, methodName, ex.getMessage()));
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", Instant.now());
         body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         body.put("error", ex.getClass());
-        body.put("message", ex.getMessage());
+        body.put("message", "[Global ErrorHandler] " + ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
