@@ -25,7 +25,7 @@
     "editor.selectionClipboard": false,
     "editor.suggestOnTriggerCharacters": false,
     "editor.wordBasedSuggestions": "off",
-    "files.autoSave": "off",
+    "files.autoSave": "afterDelay",
     "files.refactoring.autoSave": false,
     "githubPullRequests.createOnPublishBranch": "never",
     "gitlens.gitCommands.skipConfirmations": [
@@ -36,14 +36,18 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.debug.settings.onBuildFailureProceed": true,
     "maven.terminal.favorites": [
-        {
-            "command": "clean compile install  -e -X",
-            "debug": false
-        },
-        {
-            "command": "spring-boot:run -Dspring-boot.run.fork=false",
-            "debug": false
-        }
+      {
+        "command": "clean compile install  -e -X",
+        "debug": false
+      },
+      {
+        "command": "spring-boot:run -Dspring-boot.run.fork=false",
+        "debug": false
+      },
+      {
+        "command": "com.spotify.fmt:fmt-maven-plugin:2.25:format",
+        "debug": false
+      }
     ],
     "maven.view": "hierarchical",
     "screencastMode.keyboardOptions": {

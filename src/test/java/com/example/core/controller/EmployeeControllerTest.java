@@ -32,19 +32,13 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(EmployeeController.class)
 class EmployeeControllerTest {
 
-  @MockitoBean
-  private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+  @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
-  @Autowired
-  @NonNull
-  private MockMvc mockMvc;
+  @Autowired @NonNull private MockMvc mockMvc;
 
-  @MockitoBean
-  @NonNull
-  private EmployeeDAO employeeDAO;
+  @MockitoBean @NonNull private EmployeeDAO employeeDAO;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
   @Test
   void testGetAllEmployees() throws Exception {
@@ -204,8 +198,9 @@ class EmployeeControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
-                .value(containsString(
-                    "The request body is malformed or contains invalid JSON syntax.")));
+                .value(
+                    containsString(
+                        "The request body is malformed or contains invalid JSON syntax.")));
   }
 
   @Test
@@ -215,8 +210,7 @@ class EmployeeControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
-                .value(containsString(
-                    "The required request body payload is entirely missing.")));
+                .value(containsString("The required request body payload is entirely missing.")));
   }
 
   @Test
