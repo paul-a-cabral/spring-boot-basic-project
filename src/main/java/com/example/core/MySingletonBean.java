@@ -1,34 +1,34 @@
 package com.example.core;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A simple Spring-managed singleton bean.
- * Spring beans are singleton-scoped by default, so no extra scope annotation is required.
+ * A simple Spring-managed singleton bean. Spring beans are singleton-scoped by default, so no extra
+ * scope annotation is required.
  */
 public class MySingletonBean implements MyBeanInterface {
-    
-    private final AtomicInteger counter = new AtomicInteger(0);
 
-    public MySingletonBean() { 
-        System.out.println("#### MySingletonBean constructor called");
-    }
+  private final AtomicInteger counter = new AtomicInteger(0);
 
-    public void performTask() {
-        System.out.println("  Performing task in MySingletonBean");
-        var incrementedValue  = counter.incrementAndGet();
-        System.out.println("  Task performed " + incrementedValue + " times.");
-    }
+  public MySingletonBean() {
+    System.out.println("#### MySingletonBean constructor called");
+  }
 
-    @PostConstruct
-    public void init() {
-        System.out.println(">>> MySingletonBean preMySingletonBean logic");
-    }
+  public void performTask() {
+    System.out.println("  Performing task in MySingletonBean");
+    var incrementedValue = counter.incrementAndGet();
+    System.out.println("  Task performed " + incrementedValue + " times.");
+  }
 
-    @PreDestroy
-    public void destroy() {
-        System.out.println("MySingletonBean cleanup logic");
-    }
+  @PostConstruct
+  public void init() {
+    System.out.println(">>> MySingletonBean preMySingletonBean logic");
+  }
+
+  @PreDestroy
+  public void destroy() {
+    System.out.println("MySingletonBean cleanup logic");
+  }
 }

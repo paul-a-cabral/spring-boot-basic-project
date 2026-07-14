@@ -1,3 +1,15 @@
+pkill -f "com.example.Application|spring-boot:run"
+
+## To run a single test in debug mode
+1. mvn -Dtest=com.example.core.controller.EmployeeControllerTest#testReplaceEmployee -Dmaven.surefire.debug test
+2. go to debug panel and "Attach JVM 5005"
+
+## To run a single test
+mvn test -Dtest=EmployeeControllerTest#testGetAllEmployeesUnexpectedError
+
+## To format document (recommended formatter for java)
+mvn com.spotify.fmt:fmt-maven-plugin:2.25:format
+
 jar location:
 /workspaces/spring-boot-basic-project/target/spring-boot-basic-1.0.0.jar
 
