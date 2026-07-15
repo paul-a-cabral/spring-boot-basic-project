@@ -37,11 +37,7 @@
     "java.debug.settings.onBuildFailureProceed": true,
     "maven.terminal.favorites": [
       {
-        "command": "clean compile install  -e -X",
-        "debug": false
-      },
-      {
-        "command": "spring-boot:run -Dspring-boot.run.fork=false",
+        "command": "compile spring-boot:run -Dspring-boot.run.fork=false",
         "debug": false
       },
       {
