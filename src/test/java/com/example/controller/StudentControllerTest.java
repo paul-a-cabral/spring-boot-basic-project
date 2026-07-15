@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.core.config.SecurityConfig;
+import com.example.core.security.JwtService;
 import com.example.entity.Student;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -51,6 +53,9 @@ public class StudentControllerTest {
   @MockitoBean private CourseService courseService;
 
   @MockitoBean private EnrollmentService enrollmentService;
+
+  @MockitoBean private JwtService jwtService;
+  @MockitoBean private UserDetailsService userDetailsService;
 
   @Test
   void searchByEmailReturnsStudentWhenFound() throws Exception {

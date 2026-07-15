@@ -1,6 +1,7 @@
 package com.example.core.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -8,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 public class TaskController {
 
   // 1. Open to anyone (no login required)
-  @GetMapping("/something")
+  @GetMapping("/get-something")
   public String getSomething() {
     return "Public Data: Anyone can see this!";
   }
 
   // 2. Requires any authenticated user (login required)
-  @PostMapping("/do-something")
+  @GetMapping("/get-something-authenticated")
   @PreAuthorize("isAuthenticated()")
   public String doSomething() {
     return "Success: You are logged in!";
@@ -29,15 +30,13 @@ public class TaskController {
 
   // 4. Only accessible by users with the raw 'AUDIT' authority/privilege
   @PostMapping("/audit-task")
-  @PreAuthorize("hasAuthority('AUDIT')")
+  @PreAuthorize("hasAuthority('CAN_AUDIT')")
   public String doAuditTask() {
     return "Success: Audit task executed!";
   }
 
-  // 5. Accessible to admins or the specific username 'superuser'
-  @PostMapping("/admin-or-superuser-task")
-  @PreAuthorize("hasRole('ADMIN') or authentication.name == 'superuser'")
-  public String doAdminOrSuperuserTask() {
-    return "Success: Admin or superuser task executed!";
+  @GetMapping("/me")
+  public String me(Authentication authentication) {
+    return authentication.getName();
   }
 }

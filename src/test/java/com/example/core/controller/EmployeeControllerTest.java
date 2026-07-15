@@ -17,6 +17,7 @@ import com.example.core.config.SecurityConfig;
 import com.example.core.data.EmployeeDAO;
 import com.example.core.data.EmployeeEntity;
 import com.example.core.dto.EmployeeDto;
+import com.example.core.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,6 +44,9 @@ class EmployeeControllerTest {
   @MockitoBean @NonNull private EmployeeDAO employeeDAO;
 
   @Autowired private ObjectMapper objectMapper;
+
+  @MockitoBean private JwtService jwtService;
+  @MockitoBean private UserDetailsService userDetailsService;
 
   @Test
   void testGetAllEmployees() throws Exception {
