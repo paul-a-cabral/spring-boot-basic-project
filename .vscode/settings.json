@@ -37,14 +37,17 @@
   "java.debug.settings.onBuildFailureProceed": true,
   "maven.terminal.favorites": [
     {
-      "command": "compile spring-boot:run -Dspring-boot.run.fork=false",
+      "alias": "Run Spring Boot",
+      "command": "-Pdev-run compile spring-boot:run",
       "debug": false
     },
     {
-      "command": "compile spring-boot:run -Dspring-boot.run.fork=false -Dspring-boot.run.profiles=flyway",
+      "alias": "Run Spring Boot with Flyway",
+      "command": "-Pflyway-run compile spring-boot:run",
       "debug": false
     },
     {
+      "alias": "Format Code",
       "command": "com.spotify.fmt:fmt-maven-plugin:2.25:format",
       "debug": false
     }

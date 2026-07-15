@@ -148,4 +148,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev-run</id>
+            <properties>
+                <spring-boot.run.profiles>dev</spring-boot.run.profiles>
+                <spring-boot.run.fork>false</spring-boot.run.fork>
+            </properties>
+        </profile>
+        <profile>
+            <id>flyway-run</id>
+            <properties>
+                <spring-boot.run.profiles>flyway</spring-boot.run.profiles>
+                <spring-boot.run.fork>false</spring-boot.run.fork>
+            </properties>
+        </profile>
+    </profiles>
 </project>

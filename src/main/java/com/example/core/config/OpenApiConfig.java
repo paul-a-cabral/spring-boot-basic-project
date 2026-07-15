@@ -1,6 +1,5 @@
 package com.example.core.config;
 
-import com.example.core.security.AuthenticationMode;
 import com.example.core.security.SecurityProperties;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -17,7 +16,7 @@ public class OpenApiConfig {
     String securitySchemeName = "";
     SecurityScheme securityScheme = null;
 
-    if (AuthenticationMode.JWT == securityProperties.getAuthentication()) {
+    if ("JWT".equalsIgnoreCase(securityProperties.getAuthentication())) {
       securitySchemeName = "bearerAuth";
       securityScheme =
           new SecurityScheme()
@@ -26,7 +25,7 @@ public class OpenApiConfig {
               .scheme("bearer")
               .bearerFormat("JWT");
 
-    } else if (AuthenticationMode.BASIC == securityProperties.getAuthentication()) {
+    } else if ("BASIC".equalsIgnoreCase(securityProperties.getAuthentication())) {
       securitySchemeName = "basicAuth";
       securityScheme =
           new SecurityScheme()
@@ -42,6 +41,7 @@ public class OpenApiConfig {
 
     return new OpenAPI()
         .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+        .components(new Components().addSecuritySchemes(securitySchemeName, securityScheme))
         .components(new Components().addSecuritySchemes(securitySchemeName, securityScheme));
   }
 }
