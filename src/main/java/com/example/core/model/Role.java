@@ -1,13 +1,17 @@
 package com.example.core.model;
 
+import static com.example.core.model.Permission.*;
+
 import java.util.Set;
 
 public enum Role {
-  USER(Set.of(Permission.CAN_READ)),
+  GUEST(Set.of()),
 
-  ADMIN(Set.of(Permission.CAN_READ, Permission.CAN_EDIT, Permission.CAN_DELETE)),
+  USER(Set.of(CAN_READ)),
 
-  AUDITOR(Set.of(Permission.CAN_READ, Permission.CAN_EDIT, Permission.CAN_AUDIT));
+  ADMIN(Set.of(CAN_READ, CAN_WRITE, CAN_EDIT, CAN_DELETE)),
+
+  AUDITOR(Set.of(CAN_READ, CAN_AUDIT));
 
   private final Set<Permission> permissions;
 

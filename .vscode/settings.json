@@ -48,7 +48,7 @@
     },
     {
       "alias": "Format Code",
-      "command": "com.spotify.fmt:fmt-maven-plugin:2.25:format",
+      "command": "com.spotify.fmt:fmt-maven-plugin:2.25:format -e -X",
       "debug": false
     }
   ],

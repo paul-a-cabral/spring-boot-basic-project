@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
+import com.example.config.StudentEmailProperties;
 import com.example.entity.Student;
 import com.example.repository.StudentRepository;
 import java.util.List;
@@ -27,9 +28,11 @@ public class StudentServiceTest {
 
   @NonNull private Student student;
 
+  @Mock private StudentEmailProperties emailProperties;
+
   @BeforeEach
   void setUp() {
-    studentService = new StudentService(repository);
+    studentService = new StudentService(repository, emailProperties);
     ReflectionTestUtils.setField(studentService, "emailDomain", "example.com");
     student = new Student(1L, "Jane Doe", "jane.doe@example.com");
   }

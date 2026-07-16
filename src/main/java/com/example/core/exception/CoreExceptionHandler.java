@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -25,6 +27,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 // Restrict this advice ONLY to the core controller package
 @RestControllerAdvice(basePackages = "com.example.core.controller")
+@Order(
+    Ordered
+        .HIGHEST_PRECEDENCE) // Ensure this has a higher priority than any global exception handlers
 public class CoreExceptionHandler {
 
   private static final String ERROR_MSG_PREFIX = "[Core Error Handler]";

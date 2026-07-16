@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.config.StudentEmailProperties;
 import com.example.dto.CourseDto;
 import com.example.dto.StudentDto;
 import com.example.entity.Student;
@@ -11,7 +12,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,11 +37,11 @@ public class StudentController {
       StudentService studentService,
       CourseService courseService,
       EnrollmentService enrollmentService,
-      @Value("${app.students.email.domain:example.com}") String emailDomain) {
+      StudentEmailProperties emailProperties) {
     this.studentService = studentService;
     this.courseService = courseService;
     this.enrollmentService = enrollmentService;
-    this.emailDomain = emailDomain;
+    this.emailDomain = emailProperties.getDomain();
   }
 
   @PostMapping("/generate")

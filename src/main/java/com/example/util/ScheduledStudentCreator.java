@@ -1,5 +1,6 @@
 package com.example.util;
 
+import com.example.dto.StudentDto;
 import com.example.entity.Student;
 import com.example.service.StudentService;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class ScheduledStudentCreator {
 
   public ScheduledStudentCreator(
       StudentService studentService,
-      @Value("${app.students.email.domain:example.com}") String emailDomain) {
+      @Value("${students.email.domain:example.com}") String emailDomain) {
     this.studentService = studentService;
     this.emailDomain = emailDomain;
   }
@@ -32,7 +33,7 @@ public class ScheduledStudentCreator {
 
       Student student = new Student(null, name, email);
       Student saved = studentService.create(student);
-      log.info("Created student {} with id {}", saved.getName(), saved.getId());
+      log.info("Created student: {}", StudentDto.fromEntity(saved));
     } catch (Exception e) {
       log.error("Failed to create scheduled student", e);
     }

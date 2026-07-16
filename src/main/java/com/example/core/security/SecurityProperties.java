@@ -8,5 +8,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SecurityProperties {
 
   private String authentication; // Spring Boot binds this via constructor injection!
-
 }

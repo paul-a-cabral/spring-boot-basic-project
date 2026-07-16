@@ -6,8 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
+@Data // ✅ Generates Getters, Setters, toString, equals, and hashCode
+@NoArgsConstructor // ✅ Generates the empty constructor (needed by Jackson for deserialization)
+@AllArgsConstructor // ✅ Generates the full constructor (used in fromEntity)
+@Builder // ✅ Optional, but highly recommended for DTOs to make object creation cleaner
 public class StudentDto {
 
   private Long id;
@@ -25,57 +33,12 @@ public class StudentDto {
   @JsonProperty(access = Access.READ_ONLY)
   private Instant updatedAt;
 
-  public StudentDto() {}
-
-  public StudentDto(Long id, String name, String email, Instant createdAt, Instant updatedAt) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public void setUpdatedAt(Instant updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
   @Nullable
   public static StudentDto fromEntity(@Nullable Student student) {
     if (student == null) {
       return null;
     }
+    // You can still use the AllArgsConstructor:
     return new StudentDto(
         student.getId(),
         student.getName(),

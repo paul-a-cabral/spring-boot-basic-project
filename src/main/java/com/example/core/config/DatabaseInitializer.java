@@ -41,8 +41,14 @@ public class DatabaseInitializer {
         User superUser = new User();
         superUser.setUsername("superuser");
         superUser.setPassword(passwordEncoder.encode("superuser"));
-        superUser.setRole("SUPERUSER");
+        superUser.setRole("ROLE_SUPERUSER");
         userRepository.save(superUser);
+
+        User guestUser = new User();
+        guestUser.setUsername("guest");
+        guestUser.setPassword(passwordEncoder.encode("guest"));
+        guestUser.setRole("ROLE_GUEST");
+        userRepository.save(guestUser);
 
         System.out.println(">> Database successfully seeded with default security accounts!");
       } else {
