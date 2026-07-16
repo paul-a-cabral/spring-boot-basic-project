@@ -1,12 +1,12 @@
 package com.example.service;
 
+import com.example.config.StudentEmailProperties;
 import com.example.entity.Student;
 import com.example.repository.StudentRepository;
 import com.example.util.StudentGenerator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class StudentService {
 
   private final StudentRepository repository;
 
-  @Value("${students.email.domain}")
   private String emailDomain;
 
-  public StudentService(StudentRepository repository) {
+  public StudentService(StudentRepository repository, StudentEmailProperties emailProperties) {
     this.repository = repository;
+    this.emailDomain = emailProperties.getDomain();
   }
 
   public Student create(@NonNull Student student) {

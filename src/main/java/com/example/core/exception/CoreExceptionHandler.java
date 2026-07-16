@@ -11,9 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,6 +27,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 // Restrict this advice ONLY to the core controller package
 @RestControllerAdvice(basePackages = "com.example.core.controller")
+@Order(
+    Ordered
+        .HIGHEST_PRECEDENCE) // Ensure this has a higher priority than any global exception handlers
 public class CoreExceptionHandler {
 
   private static final String ERROR_MSG_PREFIX = "[Core Error Handler]";
@@ -166,6 +172,19 @@ public class CoreExceptionHandler {
       return addErrorDetails(errors, ex, request);
     }
 
+    return errors;
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public Map<String, String> handleAccessDenied(
+      AccessDeniedException ex, HttpServletRequest request) {
+    Map<String, String> errors = new HashMap<>();
+    errors.put("error", String.format("%s Access denied: %s", ERROR_MSG_PREFIX, ex.getMessage()));
+
+    if (RequestContext.isDetailedError()) {
+      return addErrorDetails(errors, ex, request);
+    }
     return errors;
   }
 

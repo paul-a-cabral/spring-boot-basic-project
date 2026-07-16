@@ -1,6 +1,7 @@
 package com.example.core.data;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.repository.RepositoryDefinition;
 
 @RepositoryDefinition(domainClass = EmployeeEntity.class, idClass = Long.class)
@@ -10,7 +11,9 @@ public interface EmployeeDAO extends EmployeeCustomDAO {
 
   public List<EmployeeEntity> findAll();
 
-  public java.util.Optional<EmployeeEntity> findById(Long id);
+  public Optional<EmployeeEntity> findById(Long id);
 
   public boolean existsById(Long id);
+
+  public void delete(EmployeeEntity employee);
 }

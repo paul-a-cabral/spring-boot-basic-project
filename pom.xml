@@ -67,6 +67,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Springdoc OpenAPI (Swagger UI) -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -77,6 +83,45 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!-- JWT API -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+
+        <!-- JWT Implementation (Runtime only) -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JSON parser integration (Jackson is standard for Spring Boot) -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
@@ -103,4 +148,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev-run</id>
+            <properties>
+                <spring-boot.run.profiles>dev</spring-boot.run.profiles>
+                <spring-boot.run.fork>false</spring-boot.run.fork>
+            </properties>
+        </profile>
+        <profile>
+            <id>flyway-run</id>
+            <properties>
+                <spring-boot.run.profiles>flyway</spring-boot.run.profiles>
+                <spring-boot.run.fork>false</spring-boot.run.fork>
+            </properties>
+        </profile>
+    </profiles>
 </project>

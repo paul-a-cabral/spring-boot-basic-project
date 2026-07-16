@@ -20,10 +20,14 @@ public class DetailedParamInterceptor implements HandlerInterceptor {
       HandlerMethod handlerMethod = (HandlerMethod) handler;
       String methodName = handlerMethod.getMethod().getName();
       String className = handlerMethod.getBeanType().getSimpleName();
-      logger.info("[DetailedParamInterceptor] Handling request for {}.{}", className, methodName);
-      String detailed = request.getParameter("detailed");
-      RequestContext.setDetailedError("true".equalsIgnoreCase(detailed));
-      logger.info(
+      logger.debug("[DetailedParamInterceptor] Handling request for {}.{}", className, methodName);
+
+      boolean isPresent = request.getParameterMap().containsKey("detailed");
+      System.out.println(
+          "444444 [DetailedParamInterceptor] 'detailed' query parameter present: " + isPresent);
+      RequestContext.setDetailedError(isPresent);
+
+      logger.debug(
           "[DetailedParamInterceptor] Detailed error logging is set to: {}",
           RequestContext.isDetailedError());
     }

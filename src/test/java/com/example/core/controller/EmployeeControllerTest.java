@@ -13,9 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.core.config.SecurityConfig;
 import com.example.core.data.EmployeeDAO;
 import com.example.core.data.EmployeeEntity;
 import com.example.core.dto.EmployeeDto;
+import com.example.core.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
@@ -23,13 +25,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(EmployeeController.class)
+@Import(SecurityConfig.class)
 class EmployeeControllerTest {
 
   @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
@@ -39,6 +44,9 @@ class EmployeeControllerTest {
   @MockitoBean @NonNull private EmployeeDAO employeeDAO;
 
   @Autowired private ObjectMapper objectMapper;
+
+  @MockitoBean private JwtService jwtService;
+  @MockitoBean private UserDetailsService userDetailsService;
 
   @Test
   void testGetAllEmployees() throws Exception {
@@ -171,7 +179,9 @@ class EmployeeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmployeeDto)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.name").value("Name is required when creating a new employee"));
+        .andExpect(
+            jsonPath("$.error")
+                .value(containsString("name=Name is required when creating a new employee")));
   }
 
   @Test
@@ -185,7 +195,9 @@ class EmployeeControllerTest {
                 .content(objectMapper.writeValueAsString(invalidEmployeeDto)))
         .andExpect(status().isBadRequest())
         .andExpect(
-            jsonPath("$.id").value("ID must be null when creating or replacing an employee"));
+            jsonPath("$.error")
+                .value(
+                    containsString("id=ID must be null when creating or replacing an employee")));
   }
 
   @Test
@@ -291,7 +303,9 @@ class EmployeeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Patched Name\"}"))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.id").value("ID is required when updating an existing employee"));
+        .andExpect(
+            jsonPath("$.error")
+                .value(containsString("id=ID is required when updating an existing employee")));
   }
 
   @Test
@@ -311,9 +325,8 @@ class EmployeeControllerTest {
     mockMvc
         .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.error").value("RuntimeException"))
         .andExpect(
-            jsonPath("$.message")
+            jsonPath("$.error")
                 .value(
                     containsString(
                         "An unexpected error occurred in EmployeeController.getEmployees(): DAO exploded")));

@@ -1,5 +1,6 @@
 package com.example.core.dto;
 
+import com.example.core.annotation.AtLeastOneField;
 import com.example.core.annotation.OnCreate;
 import com.example.core.annotation.OnUpdate;
 import com.example.core.data.EmployeeEntity;
@@ -8,10 +9,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// Drops null fields for this class only
-// for global settings see application.properties
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@AtLeastOneField(groups = {OnUpdate.class}) // 👈 Applied here for updates only!
 public class EmployeeDto {
 
   @Null(
@@ -22,9 +30,11 @@ public class EmployeeDto {
       message = "ID is required when updating an existing employee")
   private Long id;
 
+  // Note: On OnUpdate, name is no longer strictly @NotBlank on its own.
+  // It is only validated if it is actually passed (to prevent blank names).
   @NotBlank(
       groups = {OnCreate.class},
-      message = "Name is required when creating a new employee")
+      message = "Name is required when creating or replacinga new employee")
   private String name;
 
   @Min(
@@ -32,38 +42,6 @@ public class EmployeeDto {
       groups = {OnCreate.class, OnUpdate.class},
       message = "Salary must be a non-negative value")
   private Double salary;
-
-  public EmployeeDto() {}
-
-  public EmployeeDto(Long id, String name, Double salary) {
-    this.id = id;
-    this.name = name;
-    this.salary = salary;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Double getSalary() {
-    return salary;
-  }
-
-  public void setSalary(Double salary) {
-    this.salary = salary;
-  }
 
   public static EmployeeDto fromEntityToDto(EmployeeEntity entity) {
     return new EmployeeDto(entity.getId(), entity.getName(), entity.getSalary());
