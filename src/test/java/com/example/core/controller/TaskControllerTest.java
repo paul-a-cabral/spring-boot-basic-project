@@ -7,13 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.core.config.SecurityConfig;
-import com.example.core.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,8 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 class TaskControllerTest {
 
   @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-  @MockitoBean private JwtService jwtService;
-  @MockitoBean private UserDetailsService userDetailsService;
 
   @Autowired private MockMvc mockMvc;
 

@@ -1,9 +1,13 @@
 package com.example.core.config;
 
 import com.example.core.security.JwtAuthenticationFilter;
+import com.example.core.security.JwtService;
 import com.example.core.security.SecurityProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +17,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -26,13 +31,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity // Essential: This turns on the @PreAuthorize annotations in your controller
 public class SecurityConfig {
 
-  // @Bean
-  // @ConditionalOnProperty(prefix = "app.security", name = "authentication",
-  // havingValue = "JWT")
-  // public JwtAuthenticationFilter jwtAuthenticationFilter(
-  // JwtService jwtService, UserDetailsService userDetailsService) {
-  // return new JwtAuthenticationFilter(jwtService, userDetailsService);
-  // }
+  @Bean
+  @ConditionalOnProperty(prefix = "app.security", name = "authentication",
+  havingValue = "JWT")
+  public JwtAuthenticationFilter jwtAuthenticationFilter(
+  JwtService jwtService, UserDetailsService userDetailsService) {
+  return new JwtAuthenticationFilter(jwtService, userDetailsService);
+  }
 
   @Bean
   public AuthenticationEntryPoint customAuthenticationEntryPoint(ObjectMapper objectMapper) {
@@ -54,8 +59,7 @@ public class SecurityConfig {
       HttpSecurity http,
       AuthenticationEntryPoint customAuthenticationEntryPoint,
       AccessDeniedHandler customAccessDeniedHandler,
-      // ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider,
-      JwtAuthenticationFilter jwtAuthenticationFilter,
+      ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider,
       SecurityProperties securityProperties)
       throws Exception {
     http.csrf(csrf -> csrf.disable()) // Disabled for stateless/testing ease
@@ -95,12 +99,11 @@ public class SecurityConfig {
       case "BASIC" -> http.httpBasic(Customizer.withDefaults());
 
       case "JWT" -> {
-        // JwtAuthenticationFilter jwtAuthenticationFilter =
-        // jwtAuthenticationFilterProvider.getIfAvailable();
-        // if (jwtAuthenticationFilter == null) {
-        // throw new IllegalStateException(
-        // "JWT authentication mode requires JwtAuthenticationFilter bean");
-        // }
+        JwtAuthenticationFilter jwtAuthenticationFilter = jwtAuthenticationFilterProvider.getIfAvailable();
+        if (jwtAuthenticationFilter == null) {
+          throw new IllegalStateException(
+              "JWT authentication mode requires JwtAuthenticationFilter bean");
+        }
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
       }
     }
