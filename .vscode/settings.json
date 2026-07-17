@@ -42,8 +42,8 @@
       "debug": false
     },
     {
-      "alias": "Run Spring Boot with Flyway",
-      "command": "-Pflyway-run compile spring-boot:run",
+      "alias": "Run Spring Boot with JWT",
+      "command": "-Pjwt-run compile spring-boot:run",
       "debug": false
     },
     {

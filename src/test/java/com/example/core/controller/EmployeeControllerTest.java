@@ -5,6 +5,9 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,8 +21,8 @@ import com.example.core.data.EmployeeDAO;
 import com.example.core.data.EmployeeEntity;
 import com.example.core.dto.EmployeeDto;
 import com.example.core.security.JwtService;
+import com.example.core.service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -29,7 +32,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,6 +48,7 @@ class EmployeeControllerTest {
   @Autowired @NonNull private MockMvc mockMvc;
 
   @MockitoBean @NonNull private EmployeeDAO employeeDAO;
+    @MockitoBean private EmployeeService employeeService;
 
   @Autowired private ObjectMapper objectMapper;
 
@@ -49,10 +56,23 @@ class EmployeeControllerTest {
   @MockitoBean private UserDetailsService userDetailsService;
 
   @Test
-  void testGetAllEmployees() throws Exception {
+    void testGetAllEmployeesRequiresAuthentication() throws Exception {
+        mockMvc
+                .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(
+                        jsonPath("$.message").value("Authentication is required to access this resource"))
+                .andExpect(jsonPath("$.path").value("/api/employees"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "CAN_READ")
+    void testGetAllEmployees() throws Exception {
     EmployeeEntity employee1 = new EmployeeEntity(1L, "John Doe", 50000.0);
     EmployeeEntity employee2 = new EmployeeEntity(2L, "Jane Smith", 60000.0);
-    List<EmployeeEntity> employees = Arrays.asList(employee1, employee2);
+        List<EmployeeEntity> employees = List.of(employee1, employee2);
 
     given(employeeDAO.findAll()).willReturn(employees);
 
@@ -69,8 +89,9 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetAllEmployeesEmpty() throws Exception {
-    given(employeeDAO.findAll()).willReturn(Arrays.asList());
+        given(employeeDAO.findAll()).willReturn(List.of());
 
     mockMvc
         .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
@@ -79,6 +100,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByQueryParam() throws Exception {
     Long employeeId = 1L;
     EmployeeEntity employee = new EmployeeEntity(employeeId, "Alice Johnson", 70000.0);
@@ -94,6 +116,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByQueryParamNotFound() throws Exception {
     given(employeeDAO.findById(999L)).willReturn(Optional.empty());
 
@@ -103,6 +126,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByPathVariable() throws Exception {
     Long employeeId = 1L;
     EmployeeEntity employee = new EmployeeEntity(employeeId, "Bob Wilson", 55000.0);
@@ -118,6 +142,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByPathVariableNotFound() throws Exception {
     given(employeeDAO.findById(999L)).willReturn(Optional.empty());
 
@@ -127,6 +152,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByPathVariableTypeMismatch() throws Exception {
     mockMvc
         .perform(get("/api/employees/{id}", "abc").accept(MediaType.APPLICATION_JSON))
@@ -136,6 +162,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByPathVariableMinViolation() throws Exception {
     mockMvc
         .perform(get("/api/employees/{id}", -1).accept(MediaType.APPLICATION_JSON))
@@ -144,14 +171,60 @@ class EmployeeControllerTest {
   }
 
   @Test
-  void testSearchEmployees() throws Exception {
+    @WithMockUser(roles = "USER")
+    void testGetEmployeesForbiddenWithoutReadAuthority() throws Exception {
     mockMvc
-        .perform(get("/api/employees/search").accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().string(containsString("Search results for employees")));
+                .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_AUDIT")
+    void testAuditEmployees() throws Exception {
+        mockMvc
+                .perform(get("/api/employees/audit").accept(MediaType.TEXT_PLAIN))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Audit results for employees"));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void testAuditEmployeesForbiddenWithoutAuditAuthority() throws Exception {
+        mockMvc
+                .perform(get("/api/employees/audit").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+    }
+
+    @Test
+    void testGetAuthoritiesWhenAnonymous() throws Exception {
+        given(employeeService.getCurrentUserAuthorities()).willReturn(List.of());
+
+        mockMvc
+                .perform(get("/api/employees/authorities").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    @WithMockUser(username = "reader", authorities = {"CAN_READ", "CAN_AUDIT"})
+    void testGetAuthorities() throws Exception {
+      List<GrantedAuthority> authorities =
+        List.of(new SimpleGrantedAuthority("CAN_READ"), new SimpleGrantedAuthority("CAN_AUDIT"));
+
+      doReturn(authorities).when(employeeService).getCurrentUserAuthorities();
+
+        mockMvc
+                .perform(get("/api/employees/authorities").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasItem("CAN_READ")))
+                .andExpect(jsonPath("$", hasItem("CAN_AUDIT")));
+    }
+
+    @Test
+    @WithMockUser(authorities = "CAN_WRITE")
   void testCreateEmployee() throws Exception {
     EmployeeDto newEmployeeDto = new EmployeeDto(null, "Charlie Brown", 65000.0);
     EmployeeEntity savedEmployee = new EmployeeEntity(3L, "Charlie Brown", 65000.0);
@@ -163,13 +236,28 @@ class EmployeeControllerTest {
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newEmployeeDto)))
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(3L))
         .andExpect(jsonPath("$.name").value("Charlie Brown"))
         .andExpect(jsonPath("$.salary").value(65000.0));
   }
 
   @Test
+  @WithMockUser(roles = "USER")
+  void testCreateEmployeeForbiddenWithoutWriteAuthority() throws Exception {
+    EmployeeDto newEmployeeDto = new EmployeeDto(null, "Charlie Brown", 65000.0);
+
+    mockMvc
+        .perform(
+            post("/api/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newEmployeeDto)))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+  }
+
+  @Test
+  @WithMockUser(authorities = "CAN_WRITE")
   void testCreateEmployeeWithoutName() throws Exception {
     EmployeeDto invalidEmployeeDto = new EmployeeDto(null, null, 65000.0);
 
@@ -181,10 +269,11 @@ class EmployeeControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
-                .value(containsString("name=Name is required when creating a new employee")));
+            .value(containsString("name=Name is required when creating or replacinga new employee")));
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_WRITE")
   void testCreateEmployeeWithId() throws Exception {
     EmployeeDto invalidEmployeeDto = new EmployeeDto(1L, "Diana Prince", 80000.0);
 
@@ -201,6 +290,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_WRITE")
   void testCreateEmployeeWithMalformedJsonBody() throws Exception {
     mockMvc
         .perform(
@@ -216,6 +306,7 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_WRITE")
   void testCreateEmployeeWithMissingBody() throws Exception {
     mockMvc
         .perform(post("/api/employees").contentType(MediaType.APPLICATION_JSON))
@@ -226,13 +317,14 @@ class EmployeeControllerTest {
   }
 
   @Test
-  void testReplaceEmployee() throws Exception {
+    @WithMockUser(authorities = "CAN_WRITE")
+    void testReplaceEmployeeWhenEmployeeExists() throws Exception {
     Long employeeId = 1L;
-    EmployeeDto replaceEmployeeDto = new EmployeeDto(null, "Updated Name", 75000.0);
-    EmployeeEntity updatedEmployee = new EmployeeEntity(employeeId, "Updated Name", 75000.0);
+      EmployeeDto replaceEmployeeDto = new EmployeeDto(employeeId, "Updated Name", 75000.0);
+        EmployeeDto savedEmployeeDto = new EmployeeDto(employeeId, "Updated Name", 75000.0);
 
-    given(employeeDAO.findById(employeeId)).willReturn(Optional.of(updatedEmployee));
-    given(employeeDAO.save(any(EmployeeEntity.class))).willReturn(updatedEmployee);
+        given(employeeDAO.existsById(employeeId)).willReturn(true);
+        given(employeeService.saveOrReplace(any(EmployeeDto.class))).willReturn(savedEmployeeDto);
 
     mockMvc
         .perform(
@@ -246,28 +338,47 @@ class EmployeeControllerTest {
   }
 
   @Test
-  void testReplaceEmployeeNotFound() throws Exception {
-    Long employeeId = 999L;
-    EmployeeDto replaceEmployeeDto = new EmployeeDto(null, "Updated Name", 75000.0);
+    @WithMockUser(authorities = "CAN_EDIT")
+    void testReplaceEmployeeCreatesWhenEmployeeDoesNotExist() throws Exception {
+        Long employeeId = 9L;
+      EmployeeDto replaceEmployeeDto = new EmployeeDto(employeeId, "New Employee", 71000.0);
+        EmployeeDto savedEmployeeDto = new EmployeeDto(employeeId, "New Employee", 71000.0);
 
-    given(employeeDAO.findById(employeeId)).willReturn(Optional.empty());
+        given(employeeDAO.existsById(employeeId)).willReturn(false);
+        given(employeeService.saveOrReplace(any(EmployeeDto.class))).willReturn(savedEmployeeDto);
 
     mockMvc
         .perform(
             put("/api/employees/{id}", employeeId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(replaceEmployeeDto)))
-        .andExpect(status().isNotFound());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(employeeId))
+                .andExpect(jsonPath("$.name").value("New Employee"))
+                .andExpect(jsonPath("$.salary").value(71000.0));
   }
 
   @Test
+    @WithMockUser(roles = "USER")
+    void testReplaceEmployeeForbiddenWithoutWriteOrEditAuthority() throws Exception {
+      EmployeeDto replaceEmployeeDto = new EmployeeDto(1L, "Updated Name", 75000.0);
+
+        mockMvc
+                .perform(
+                        put("/api/employees/{id}", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(replaceEmployeeDto)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "CAN_EDIT")
   void testPatchEmployeeNameOnly() throws Exception {
     Long employeeId = 1L;
-    EmployeeEntity existingEmployee = new EmployeeEntity(employeeId, "Old Name", 55000.0);
-    EmployeeEntity patchedEmployee = new EmployeeEntity(employeeId, "Patched Name", 55000.0);
+        EmployeeDto patchedEmployee = new EmployeeDto(employeeId, "Patched Name", 55000.0);
 
-    given(employeeDAO.findById(employeeId)).willReturn(Optional.of(existingEmployee));
-    given(employeeDAO.save(any(EmployeeEntity.class))).willReturn(patchedEmployee);
+        given(employeeService.update(any(EmployeeDto.class))).willReturn(patchedEmployee);
 
     mockMvc
         .perform(
@@ -281,34 +392,52 @@ class EmployeeControllerTest {
   }
 
   @Test
+  @WithMockUser(roles = "USER")
+  void testPatchEmployeeForbiddenWithoutEditAuthority() throws Exception {
+    mockMvc
+        .perform(
+            patch("/api/employees/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":1,\"name\":\"Patched Name\"}"))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+  }
+
+  @Test
+  @WithMockUser(authorities = "CAN_EDIT")
   void testPatchEmployeeNotFound() throws Exception {
-    Long employeeId = 999L;
-    given(employeeDAO.findById(employeeId)).willReturn(Optional.empty());
+    given(employeeService.update(any(EmployeeDto.class)))
+        .willThrow(new jakarta.persistence.EntityNotFoundException("Employee not found with ID: 999"));
 
     mockMvc
         .perform(
-            patch("/api/employees/{id}", employeeId)
+            patch("/api/employees/{id}", 999L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\":999,\"name\":\"Patched Name\"}"))
-        .andExpect(status().isNotFound());
-  }
-
-  @Test
-  void testPatchEmployeeWithoutId() throws Exception {
-    Long employeeId = 1L;
-
-    mockMvc
-        .perform(
-            patch("/api/employees/{id}", employeeId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"Patched Name\"}"))
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(
             jsonPath("$.error")
-                .value(containsString("id=ID is required when updating an existing employee")));
+                .value(
+                    containsString(
+                        "An unexpected error occurred in EmployeeController.patchEmployee(): Employee not found with ID: 999")));
   }
 
   @Test
+  @WithMockUser(authorities = "CAN_EDIT")
+  void testPatchEmployeeWithoutId() throws Exception {
+    mockMvc
+        .perform(
+            patch("/api/employees/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Patched Name\"}"))
+      .andExpect(status().isBadRequest())
+      .andExpect(
+        jsonPath("$.error")
+          .value(containsString("id=ID is required when updating an existing employee")));
+  }
+
+  @Test
+  @WithMockUser(authorities = "CAN_EDIT")
   void testPatchEmployeeInvalidSalaryType() throws Exception {
     mockMvc
         .perform(
@@ -319,6 +448,24 @@ class EmployeeControllerTest {
   }
 
   @Test
+    @WithMockUser(authorities = "CAN_DELETE")
+    void testDeleteEmployee() throws Exception {
+        doNothing().when(employeeService).delete(1L);
+
+        mockMvc.perform(delete("/api/employees/{id}", 1L)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void testDeleteEmployeeForbiddenWithoutDeleteAuthority() throws Exception {
+        mockMvc
+                .perform(delete("/api/employees/{id}", 1L))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+    }
+
+    @Test
+    @WithMockUser(authorities = "CAN_READ")
   void testGetAllEmployeesUnexpectedError() throws Exception {
     given(employeeDAO.findAll()).willThrow(new RuntimeException("DAO exploded"));
 

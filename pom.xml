@@ -146,6 +146,25 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                        <include>**/*ITCase.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -158,9 +177,9 @@
             </properties>
         </profile>
         <profile>
-            <id>flyway-run</id>
+            <id>jwt-run</id>
             <properties>
-                <spring-boot.run.profiles>flyway</spring-boot.run.profiles>
+                <spring-boot.run.profiles>jwt</spring-boot.run.profiles>
                 <spring-boot.run.fork>false</spring-boot.run.fork>
             </properties>
         </profile>

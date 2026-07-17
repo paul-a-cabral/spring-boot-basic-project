@@ -4,8 +4,13 @@ pkill -f "com.example.Application|spring-boot:run"
 1. mvn -Dtest=com.example.core.controller.EmployeeControllerTest#testReplaceEmployee -Dmaven.surefire.debug test
 2. go to debug panel and "Attach JVM 5005"
 
-## To run a single test
-mvn test -Dtest=EmployeeControllerTest#testGetAllEmployeesUnexpectedError
+# To run tests:
+mvn clean verify
+mvn -Dtest-ClassName test (or: mvn -Dtest-ClassName#methodName test)   
+
+# note: for failsafe (-Dit.test, not --Dtest )
+  mvn clean -Dit.test=EmployeeControllerBasicModeIT,EmployeeControllerJwtModeIT verify
+
 
 ## To format document (recommended formatter for java)
 mvn com.spotify.fmt:fmt-maven-plugin:2.25:format

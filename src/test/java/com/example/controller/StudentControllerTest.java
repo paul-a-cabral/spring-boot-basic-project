@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.core.config.SecurityConfig;
 import com.example.core.security.JwtService;
+import com.example.config.StudentEmailProperties;
 import com.example.entity.Student;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;
@@ -53,6 +54,7 @@ public class StudentControllerTest {
   @MockitoBean private CourseService courseService;
 
   @MockitoBean private EnrollmentService enrollmentService;
+  @MockitoBean private StudentEmailProperties studentEmailProperties;
 
   @MockitoBean private JwtService jwtService;
   @MockitoBean private UserDetailsService userDetailsService;

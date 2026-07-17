@@ -11,34 +11,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TaskController.class)
 @Import(SecurityConfig.class)
-@TestPropertySource(properties = "app.security.authentication=BASIC")
-class TaskControllerBasicModeTest {
+class TaskControllerDefaultModeTest {
 
   @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
   @Autowired private MockMvc mockMvc;
 
   @Test
-  void meReturnsUnauthorizedWhenNotAuthenticatedInBasicMode() throws Exception {
+  void meReturnsUnauthorizedWhenNotAuthenticatedInDefaultMode() throws Exception {
     mockMvc.perform(get("/api/tasks/me")).andExpect(status().isUnauthorized());
   }
 
   @Test
-  void meReturnsUsernameWhenAuthenticatedInBasicMode() throws Exception {
+  void meReturnsUsernameWhenAuthenticatedInDefaultMode() throws Exception {
     mockMvc
-        .perform(get("/api/tasks/me").with(user("basic-user").roles("USER")))
+        .perform(get("/api/tasks/me").with(user("default-user").roles("USER")))
         .andExpect(status().isOk())
-        .andExpect(content().string("basic-user"));
+        .andExpect(content().string("default-user"));
   }
 
   @Test
-  void bearerTokenIsNotAppliedInBasicMode() throws Exception {
+  void bearerTokenIsNotAppliedInDefaultMode() throws Exception {
     mockMvc
         .perform(get("/api/tasks/me").header("Authorization", "Bearer any-token"))
         .andExpect(status().isUnauthorized());
