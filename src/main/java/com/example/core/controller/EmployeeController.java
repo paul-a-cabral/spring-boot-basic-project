@@ -4,10 +4,8 @@ import com.example.core.annotation.OnCreate;
 import com.example.core.annotation.OnUpdate;
 import com.example.core.annotation.ValidatePathId;
 import com.example.core.aspect.LogExecutionTimeAspect;
-import com.example.core.data.EmployeeDAO;
-import com.example.core.data.EmployeeEntity;
+import com.example.core.dto.EmployeeCompensationDto;
 import com.example.core.dto.EmployeeDto;
-import com.example.core.exception.EmployeeNotFoundException;
 import com.example.core.service.EmployeeService;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
@@ -37,38 +36,47 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmployeeController {
 
   private static final Logger logger = LoggerFactory.getLogger(LogExecutionTimeAspect.class);
-  private final EmployeeDAO employeeDAO;
   private final EmployeeService employeeService;
 
-  public EmployeeController(EmployeeDAO employeeDAO, EmployeeService employeeService) {
-    this.employeeDAO = employeeDAO;
+  public EmployeeController(EmployeeService employeeService) {
     this.employeeService = employeeService;
   }
 
   @GetMapping
   @PreAuthorize("hasRole('ADMIN') or hasAuthority('CAN_READ')")
   public List<EmployeeDto> getEmployees() {
-    List<EmployeeEntity> employees = employeeDAO.findAll();
+    List<EmployeeDto> employees = employeeService.findAll();
     logger.info("called getEmployees() and returned {} employees", employees.size());
-    return employees.stream().map(EmployeeDto::fromEntityToDto).toList();
+    return employees;
   }
 
   @GetMapping(params = "id")
   @PreAuthorize("hasAuthority('CAN_READ')")
   public EmployeeDto getEmployeeByQueryParam(@RequestParam @NotNull @Min(1) Long id) {
-    return EmployeeDto.fromEntityToDto(
-        employeeDAO
-            .findById(id)
-            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found")));
+    return employeeService.findById(id);
   }
 
   @GetMapping("/{id}")
   @PreAuthorize("hasAuthority('CAN_READ')")
   public EmployeeDto getEmployeeByPathVariable(@PathVariable @NotNull @Min(1) Long id) {
-    return EmployeeDto.fromEntityToDto(
-        employeeDAO
-            .findById(id)
-            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found")));
+    return employeeService.findById(id);
+  }
+
+  @GetMapping("/{id}/owned")
+  @PreAuthorize("isAuthenticated()")
+  @PostAuthorize(
+      "hasRole('ADMIN') or @employeeAuthorization.canAccessEmployee(returnObject, authentication)")
+  public EmployeeDto getOwnedEmployeeById(@PathVariable @NotNull @Min(1) Long id) {
+    return employeeService.findById(id);
+  }
+
+  @GetMapping("/{id}/compensation")
+  @PreAuthorize("isAuthenticated()")
+  @PostAuthorize(
+      "hasRole('ADMIN') or @employeeAuthorization.canAccessCompensation(returnObject, authentication)")
+  public EmployeeCompensationDto getEmployeeCompensation(
+      @PathVariable @NotNull @Min(1) Long id) {
+    return employeeService.findCompensationById(id);
   }
 
   @GetMapping("/audit")
@@ -94,8 +102,7 @@ public class EmployeeController {
   @PreAuthorize("hasAuthority('CAN_WRITE')")
   public EmployeeDto createEmployee(
       @Validated(OnCreate.class) @RequestBody EmployeeDto employeeDto) {
-    EmployeeEntity savedEmployee = employeeDAO.save(EmployeeDto.fromDtoToEntity(employeeDto));
-    return EmployeeDto.fromEntityToDto(savedEmployee);
+    return employeeService.save(employeeDto);
   }
 
   @PutMapping("/{id}")
@@ -103,18 +110,15 @@ public class EmployeeController {
   @PreAuthorize("hasAuthority('CAN_WRITE') or hasAuthority('CAN_EDIT')")
   public ResponseEntity<EmployeeDto> putEmployee(
       @PathVariable Long id, @Validated(OnUpdate.class) @RequestBody EmployeeDto dto) {
-    // 1. Check if it exists before saving
-    boolean exists = employeeDAO.existsById(id);
+    boolean exists = employeeService.existsById(id);
 
-    // 2. Perform the replace / create operation
     dto.setId(id);
     EmployeeDto savedDto = employeeService.saveOrReplace(dto);
 
-    // 3. Return 200 OK if updated, or 201 Created if brand new
     if (exists) {
-      return ResponseEntity.ok(savedDto); // Status 200
+      return ResponseEntity.ok(savedDto);
     } else {
-      return ResponseEntity.status(HttpStatus.CREATED).body(savedDto); // Status 201
+      return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
     }
   }
 
@@ -131,7 +135,8 @@ public class EmployeeController {
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT) // 204 No Content
-  @PreAuthorize("hasAuthority('CAN_DELETE')")
+  @PreAuthorize(
+      "hasAuthority('CAN_DELETE') or @employeeAuthorization.canDeleteOwnEmployee(#id, authentication)")
   public void deleteEmployee(@PathVariable Long id) {
     employeeService.delete(id);
   }

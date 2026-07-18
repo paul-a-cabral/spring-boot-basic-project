@@ -1,4 +1,4 @@
-package com.example.core.data;
+package com.example.core.employee;
 
 /** Checked exception for employee-related errors. */
 public class MyEmployeeException extends Exception {

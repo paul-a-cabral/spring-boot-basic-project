@@ -1,10 +1,11 @@
 package com.example.core.service;
 
-import com.example.core.model.Role;
+import com.example.core.entity.Permission;
+import com.example.core.entity.Role;
 import com.example.core.repository.UserRepository;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,32 +36,29 @@ public class CustomUserDetailsService implements UserDetailsService {
   }
 
   private UserDetails mapToUserDetails(com.example.core.entity.User user) {
+    Role role = user.getRole();
+    if (role == null) {
+      throw new UsernameNotFoundException(
+          "User " + user.getUsername() + " does not have a role assigned");
+    }
+
     return User.builder()
         .username(user.getUsername())
         .password(user.getPassword())
-        .authorities(
-            getAuthorities(
-                user.getRole() != null
-                    ? Role.valueOf(user.getRole().replace("ROLE_", ""))
-                    : Role.USER))
+        .authorities(getAuthorities(role))
         .build();
   }
 
   private Collection<? extends GrantedAuthority> getAuthorities(Role role) {
+    logger.info("Mapping role {} to authorities", role.getCode());
 
-    logger.info("Mapping role {} to authorities", role.name());
-
-    List<GrantedAuthority> authorities = new ArrayList<>();
-
-    // Add the role
-    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-
-    // Add the permissions
+    Set<GrantedAuthority> authorities = new LinkedHashSet<>();
+    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getCode()));
     authorities.addAll(
         role.getPermissions().stream()
-            .map(permission -> new SimpleGrantedAuthority(permission.name()))
+            .map(Permission::getCode)
+            .map(SimpleGrantedAuthority::new)
             .toList());
-
     return authorities;
   }
 }

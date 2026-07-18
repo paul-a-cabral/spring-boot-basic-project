@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.mybean;
 
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;

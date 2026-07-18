@@ -1,7 +1,10 @@
 package com.example.core.config;
 
+import com.example.core.entity.Role;
 import com.example.core.entity.User;
+import com.example.core.repository.RoleRepository;
 import com.example.core.repository.UserRepository;
+import java.util.stream.Stream;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,45 +13,42 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class DatabaseInitializer {
 
+  record UserRecord(String username, String roleCode) {}
+
   @Bean
-  CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+  CommandLineRunner initDatabase(
+      UserRepository userRepository,
+      RoleRepository roleRepository,
+      PasswordEncoder passwordEncoder) {
     return args -> {
       // 1. Check if the database is already populated to prevent duplicate insertions on restart
       if (userRepository.count() == 0) {
 
-        // 2. Create and save the Admin User
-        User admin = new User();
-        admin.setUsername("admin");
-        // Securely encode the raw password "admin123"
-        admin.setPassword(passwordEncoder.encode("admin"));
-        admin.setRole("ROLE_ADMIN");
-        userRepository.save(admin);
+        Stream<UserRecord> userRecords =
+            Stream.of(
+            new UserRecord("admin", "ADMIN"),
+            new UserRecord("auditor", "AUDITOR"),
+            new UserRecord("user", "USER"),
+            new UserRecord("superuser", "SUPERUSER"),
+            new UserRecord("guest", "GUEST"));
 
-        // 3. Create and save the Auditor User
-        User auditor = new User();
-        auditor.setUsername("auditor");
-        auditor.setPassword(passwordEncoder.encode("auditor"));
-        auditor.setRole("ROLE_AUDITOR"); // Regular user role
-        userRepository.save(auditor);
+        userRecords.forEach(
+            userRecord -> {
+            Role role =
+              roleRepository
+                .findByCode(userRecord.roleCode())
+                .orElseThrow(
+                  () ->
+                    new IllegalStateException(
+                      "Missing role seed data for code: " + userRecord.roleCode()));
 
-        // 4. Create and save a basic Regular User (for testing doSomething)
-        User regularUser = new User();
-        regularUser.setUsername("user");
-        regularUser.setPassword(passwordEncoder.encode("user"));
-        regularUser.setRole("ROLE_USER");
-        userRepository.save(regularUser);
-
-        User superUser = new User();
-        superUser.setUsername("superuser");
-        superUser.setPassword(passwordEncoder.encode("superuser"));
-        superUser.setRole("ROLE_SUPERUSER");
-        userRepository.save(superUser);
-
-        User guestUser = new User();
-        guestUser.setUsername("guest");
-        guestUser.setPassword(passwordEncoder.encode("guest"));
-        guestUser.setRole("ROLE_GUEST");
-        userRepository.save(guestUser);
+              User user = new User();
+              user.setUsername(userRecord.username());
+              user.setPassword(
+                  passwordEncoder.encode("password")); // Default password for all users
+            user.setRole(role);
+              userRepository.save(user);
+            });
 
         System.out.println(">> Database successfully seeded with default security accounts!");
       } else {

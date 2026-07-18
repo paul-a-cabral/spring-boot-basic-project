@@ -4,10 +4,9 @@ import com.example.core.security.JwtAuthenticationFilter;
 import com.example.core.security.JwtService;
 import com.example.core.security.SecurityProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,11 +31,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   @Bean
-  @ConditionalOnProperty(prefix = "app.security", name = "authentication",
-  havingValue = "JWT")
+  @ConditionalOnProperty(prefix = "app.security", name = "authentication", havingValue = "JWT")
   public JwtAuthenticationFilter jwtAuthenticationFilter(
-  JwtService jwtService, UserDetailsService userDetailsService) {
-  return new JwtAuthenticationFilter(jwtService, userDetailsService);
+      JwtService jwtService, UserDetailsService userDetailsService) {
+    return new JwtAuthenticationFilter(jwtService, userDetailsService);
   }
 
   @Bean
@@ -66,40 +64,39 @@ public class SecurityConfig {
         // Allow same-origin frame options so the H2 console layout renders
         .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
         .exceptionHandling(
-            exceptions -> exceptions
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                .accessDeniedHandler(customAccessDeniedHandler))
+            exceptions ->
+                exceptions
+                    .authenticationEntryPoint(customAuthenticationEntryPoint)
+                    .accessDeniedHandler(customAccessDeniedHandler))
         .exceptionHandling(
-            exceptions -> exceptions
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                .accessDeniedHandler(customAccessDeniedHandler))
+            exceptions ->
+                exceptions
+                    .authenticationEntryPoint(customAuthenticationEntryPoint)
+                    .accessDeniedHandler(customAccessDeniedHandler))
         .authorizeHttpRequests(
-            auth -> auth
-                // 1. Group all public endpoints
-                .requestMatchers(
-                    "/h2-console/**",
-                    "/api/tasks/get-something",
-                    "/api/employees/authorities")
-                .permitAll()
+            auth ->
+                auth
+                    // 1. Group all public endpoints
+                    .requestMatchers(
+                        "/h2-console/**", "/api/tasks/get-something", "/api/employees/authorities")
+                    .permitAll()
 
-                // 2. Group all authenticated endpoints 🚀
-                .requestMatchers(
-                    "/api/tasks/**",
-                    "/api/employees/**")
-                .authenticated()
+                    // 2. Group all authenticated endpoints 🚀
+                    .requestMatchers("/api/tasks/**", "/api/employees/**")
+                    .authenticated()
 
-                // 3. Catch-all public access for any other /api/** endpoints & fallback
-                .requestMatchers("/api/**")
-                .permitAll()
-
-                .anyRequest()
-                .permitAll());
+                    // 3. Catch-all public access for any other /api/** endpoints & fallback
+                    .requestMatchers("/api/**")
+                    .permitAll()
+                    .anyRequest()
+                    .permitAll());
 
     switch (securityProperties.getAuthentication()) {
       case "BASIC" -> http.httpBasic(Customizer.withDefaults());
 
       case "JWT" -> {
-        JwtAuthenticationFilter jwtAuthenticationFilter = jwtAuthenticationFilterProvider.getIfAvailable();
+        JwtAuthenticationFilter jwtAuthenticationFilter =
+            jwtAuthenticationFilterProvider.getIfAvailable();
         if (jwtAuthenticationFilter == null) {
           throw new IllegalStateException(
               "JWT authentication mode requires JwtAuthenticationFilter bean");

@@ -47,6 +47,11 @@
       "debug": false
     },
     {
+      "alias": "Run Spring Boot with JWT with Schema Validation",
+      "command": "-Pjwt-schema-validate-run compile spring-boot:run",
+      "debug": false
+    },
+    {
       "alias": "Format Code",
       "command": "com.spotify.fmt:fmt-maven-plugin:2.25:format -e -X",
       "debug": false
@@ -66,5 +71,8 @@
   "java.compile.nullAnalysis.mode": "disabled",
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
   }
 }

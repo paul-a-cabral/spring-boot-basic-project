@@ -1,4 +1,4 @@
-package com.example.core.data;
+package com.example.core.employee;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

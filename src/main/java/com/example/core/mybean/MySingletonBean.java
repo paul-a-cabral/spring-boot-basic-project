@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.mybean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

@@ -1,6 +1,8 @@
-package com.example.core.data;
+package com.example.core.employee;
 
 import com.example.core.annotation.LogExecutionTime;
+import com.example.core.dto.EmployeeDto;
+import com.example.core.service.EmployeeService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -9,10 +11,13 @@ import org.springframework.stereotype.Component;
 public class EmployeeUtil {
 
   private final EmployeeDAO employeeDAO;
+  private final EmployeeService employeeService;
   private final EmployeeTransactions transactions;
 
-  public EmployeeUtil(EmployeeDAO employeeDAO, EmployeeTransactions transactions) {
+  public EmployeeUtil(
+      EmployeeDAO employeeDAO, EmployeeTransactions transactions, EmployeeService employeeService) {
     this.employeeDAO = employeeDAO;
+    this.employeeService = employeeService;
     this.transactions = transactions;
   }
 
@@ -22,10 +27,13 @@ public class EmployeeUtil {
     System.out.println("### Inserting 10 employees into the database...");
 
     for (int i = 1; i <= 10; i++) {
-      EmployeeEntity employee = new EmployeeEntity();
-      employee.setName("Employee-" + i);
-      employee.setSalary(50000.0 + (i * 1000)); // Example salary
-      employeeDAO.save(employee);
+      EmployeeDto employee =
+          EmployeeDto.builder()
+              .name("Employee-" + i)
+              .salary(50000.0 + (i * 1000)) // Example salary
+              .createdBy(employeeService.getLoggedInUsername())
+              .build();
+      employeeService.save(employee);
     }
 
     System.out.println("### Performing a rolled back transaction...");
@@ -42,9 +50,7 @@ public class EmployeeUtil {
 
     System.out.println("\n### Performing a committed transaction...");
     System.out.println(
-        "[BEFORE] There areare currently "
-            + employeeDAO.findAll().size()
-            + " employee(s) in the db");
+        "[BEFORE] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
     try {
       transactions.withCheckedException();
     } catch (Exception e) {
@@ -57,9 +63,7 @@ public class EmployeeUtil {
 
     System.out.println("\n### Performing a rolled back tkransaction per annotation...");
     System.out.println(
-        "[BEFORE] There areare currently "
-            + employeeDAO.findAll().size()
-            + " employee(s) in the db");
+        "[BEFORE] There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
     try {
       transactions.withCheckedExceptionButRollsback();
     } catch (Exception e) {

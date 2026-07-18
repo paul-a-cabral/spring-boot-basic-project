@@ -1,4 +1,4 @@
-package com.example.core.data;
+package com.example.core.employee;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

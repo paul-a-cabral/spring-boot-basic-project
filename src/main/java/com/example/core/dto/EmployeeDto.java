@@ -3,8 +3,11 @@ package com.example.core.dto;
 import com.example.core.annotation.AtLeastOneField;
 import com.example.core.annotation.OnCreate;
 import com.example.core.annotation.OnUpdate;
-import com.example.core.data.EmployeeEntity;
+import com.example.core.employee.EmployeeEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,11 +46,28 @@ public class EmployeeDto {
       message = "Salary must be a non-negative value")
   private Double salary;
 
+  @JsonProperty(access = Access.READ_ONLY)
+  @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+  private String createdBy; // Optional field, can be null
+
+  // for backwards comapatibily of tests
+  public EmployeeDto(Long id, String name, Double salary) {
+    this.id = id;
+    this.name = name;
+    this.salary = salary;
+  }
+
   public static EmployeeDto fromEntityToDto(EmployeeEntity entity) {
-    return new EmployeeDto(entity.getId(), entity.getName(), entity.getSalary());
+    return new EmployeeDto(
+        entity.getId(), entity.getName(), entity.getSalary(), entity.getCreatedBy());
   }
 
   public static EmployeeEntity fromDtoToEntity(EmployeeDto dto) {
-    return new EmployeeEntity(dto.getId(), dto.getName(), dto.getSalary());
+    return EmployeeEntity.builder()
+        .id(dto.getId())
+        .name(dto.getName())
+        .salary(dto.getSalary())
+        .createdBy(dto.getCreatedBy())
+        .build();
   }
 }
