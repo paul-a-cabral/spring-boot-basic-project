@@ -2,5 +2,8 @@ package com.example.core.security;
 
 public enum AuthenticationMode {
   BASIC,
-  JWT
+  JWT;
+
+  public static final String BASIC_VALUE = "BASIC";
+  public static final String JWT_VALUE = "JWT";
 }

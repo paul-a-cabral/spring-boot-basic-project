@@ -1,5 +1,6 @@
 package com.example.core.config;
 
+import com.example.core.security.AuthenticationMode;
 import com.example.core.security.SecurityProperties;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -19,27 +20,27 @@ public class OpenApiConfig {
     String securitySchemeName = "";
     SecurityScheme securityScheme = null;
 
-    if ("JWT".equalsIgnoreCase(securityProperties.getAuthentication())) {
-      securitySchemeName = "bearerAuth";
-      securityScheme =
-          new SecurityScheme()
-              .name(securitySchemeName)
-              .type(SecurityScheme.Type.HTTP)
-              .scheme("bearer")
-              .bearerFormat("JWT");
+    AuthenticationMode authenticationMode = securityProperties.getAuthentication();
 
-    } else if ("BASIC".equalsIgnoreCase(securityProperties.getAuthentication())) {
-      securitySchemeName = "basicAuth";
-      securityScheme =
-          new SecurityScheme()
-              .name(securitySchemeName)
-              .type(SecurityScheme.Type.HTTP)
-              .scheme("basic")
-              .description("Enter your database username and password");
-
-    } else {
-      throw new IllegalStateException(
-          "Unknown authentication mode: " + securityProperties.getAuthentication());
+    switch (authenticationMode) {
+      case JWT -> {
+        securitySchemeName = "bearerAuth";
+        securityScheme =
+            new SecurityScheme()
+                .name(securitySchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+      }
+      case BASIC -> {
+        securitySchemeName = "basicAuth";
+        securityScheme =
+            new SecurityScheme()
+                .name(securitySchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("basic")
+                .description("Enter your database username and password");
+      }
     }
 
     return new OpenAPI()

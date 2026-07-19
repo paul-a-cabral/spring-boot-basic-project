@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.example.config.StudentEmailProperties;
-import com.example.dto.CourseDto;
+import com.example.dto.CourseResponseDto;
 import com.example.dto.StudentDto;
 import com.example.entity.Student;
 import com.example.service.CourseService;
@@ -101,11 +101,11 @@ public class StudentController {
   }
 
   @GetMapping("/{id}/courses")
-  public List<CourseDto> listCourses(@PathVariable @NonNull Long id) {
+  public List<CourseResponseDto> listCourses(@PathVariable @NonNull Long id) {
     return enrollmentService.getCourseIdsForStudent(id).stream()
         .map(courseService::get)
         .flatMap(opt -> opt.stream())
-        .map(CourseDto::fromEntity)
+        .map(CourseResponseDto::fromEntity)
         .toList();
   }
 }

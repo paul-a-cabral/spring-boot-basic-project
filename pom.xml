@@ -12,6 +12,8 @@
   <name>Spring Boot Basic Project</name>
   <description>A simple Spring Boot web application</description>
 
+  <!-- for dependency management, compatible library version (hence we don't specify versions for
+  most dependencies), maven defaulrs, etc -->
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -25,8 +27,37 @@
     <app.server.port>8181</app.server.port>
   </properties>
 
+    <!--
+      ==============================================
+      Spring Boot Starter Cheat Sheet
+
+      spring-boot-starter-web
+          MVC + Jackson + Tomcat
+
+      spring-boot-starter-validation
+          Bean Validation
+
+      spring-boot-starter-data-jpa
+          Hibernate + Spring Data
+
+      spring-boot-starter-security
+          Spring Security
+
+      spring-boot-starter-aop
+          AspectJ support
+
+      ==============================================
+  --> 
   <dependencies>
     <!-- Spring Boot Web Starter -->
+    <!-- 
+      Gives 
+        -Spring MVC(@RestController, @RequestMapping, ResponseEntity), 
+        -Jackson, 
+        -Tomcat,
+        -Validation integration, 
+        -Logging infrastructure 
+    -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -45,13 +76,30 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Validation -->
+    <!--
+        Jakarta Bean Validation (Hibernate Validator implementation)
+
+        Provides:
+        @Valid
+        @NotNull
+        @NotBlank
+        @Positive
+        @Size
+        and custom validators
+    -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
     <!-- Spring Boot DevTools (optional, for development) -->
+    <!--
+        Development only.
+        Provides:
+          - Automatic restart
+          - LiveReload
+          - Faster development
+    -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -66,6 +114,16 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- without this, user("admin") wouldn't work in MockMvc tests -->
+    <!-- Provides Spring Security testing support such as:
+
+          user(...)
+          csrf()
+          jwt()
+
+        and security assertions. 
+    -->
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
@@ -79,6 +137,17 @@
       <version>2.7.0</version>
     </dependency>
 
+    <!--
+        Aspect-Oriented Programming.
+
+        Enables: @Aspect
+
+        Cross-cutting concerns such as:
+        - logging
+        - timing
+        - auditing
+        - security
+    -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-aop</artifactId>
@@ -95,6 +164,12 @@
       <optional>true</optional>
     </dependency>
 
+    <!--
+        Database versioning and migrations.
+
+        Preferred over ddl-auto=create/update
+        for production systems.
+    -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
@@ -179,6 +254,13 @@
     </plugins>
   </build>
 
+  <!--
+    Development profile
+
+    Activated using
+
+    mvn spring-boot:run -Pdev-run
+  -->
   <profiles>
     <profile>
       <id>dev-run</id>

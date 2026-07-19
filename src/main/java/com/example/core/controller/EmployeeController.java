@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -73,13 +74,15 @@ public class EmployeeController {
   @PreAuthorize("isAuthenticated()")
   @PostAuthorize(
       "hasRole('ADMIN') or @employeeAuthorization.canAccessCompensation(returnObject, authentication)")
-  public EmployeeCompensationDto getEmployeeCompensation(
-      @PathVariable @NotNull @Min(1) Long id) {
+  public EmployeeCompensationDto getEmployeeCompensation(@PathVariable @NotNull @Min(1) Long id) {
     return employeeService.findCompensationById(id);
   }
 
   @GetMapping("/audit")
-  @PreAuthorize("hasAuthority('CAN_AUDIT')")
+  // @PreAuthorize("hasAuthority('CAN_AUDIT')")
+  @Secured(
+      "CAN_AUDIT") // older version, but still works, of @PreAuthorize("hasAuthority('CAN_AUDIT')")
+  // it does not support SpEL expressions, so you cannot use it for complex authorization logic
   public String auditEmployees() {
     return "Audit results for employees";
   }

@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.core.config.SecurityConfig;
+import com.example.core.security.AuthenticationMode;
 import com.example.core.security.JwtService;
 import com.example.core.service.AsyncLearningService;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TaskController.class)
 @Import(SecurityConfig.class)
-@TestPropertySource(properties = "app.security.authentication=JWT")
+@TestPropertySource(properties = "app.security.authentication=" + AuthenticationMode.JWT_VALUE)
 class TaskControllerJwtModeTest {
 
   @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
