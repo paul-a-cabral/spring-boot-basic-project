@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,18 +82,6 @@ public class EmployeeController {
   @PreAuthorize("hasAuthority('CAN_AUDIT')")
   public String auditEmployees() {
     return "Audit results for employees";
-  }
-
-  // returns the list of authorities assigned to the logged in user.
-  @GetMapping("/authorities")
-  public List<String> getAuthorities() {
-    List<String> authorities =
-        employeeService.getCurrentUserAuthorities().stream()
-            .map(GrantedAuthority::getAuthority) // Clean lambda reference
-            .toList();
-
-    logger.info("Current user authorities: {}", authorities);
-    return authorities;
   }
 
   @PostMapping

@@ -52,8 +52,13 @@
       "debug": false
     },
     {
-      "alias": "Format Code",
-      "command": "com.spotify.fmt:fmt-maven-plugin:2.25:format -e -X",
+      "alias": "Check Code Formating using Spotless",
+      "command": "spotless:check -e -X",
+      "debug": false
+    },
+    {
+      "alias": "Format Code using Spotless",
+      "command": "spotless:apply -e -X",
       "debug": false
     }
   ],

@@ -104,7 +104,8 @@ public class EmployeeService {
   }
 
   public EmployeeDto findById(Long id) {
-    return EmployeeDto.fromEntityToDto(findEmployeeEntityOrThrow(id, EmployeeNotFoundException::new));
+    return EmployeeDto.fromEntityToDto(
+        findEmployeeEntityOrThrow(id, EmployeeNotFoundException::new));
   }
 
   public EmployeeCompensationDto findCompensationById(Long id) {

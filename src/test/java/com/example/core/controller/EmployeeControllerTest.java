@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -32,8 +31,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -72,12 +69,12 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetAllEmployees() throws Exception {
-        List<EmployeeDto> employees =
-                List.of(
-                        new EmployeeDto(1L, "John Doe", 50000.0, "owner-1"),
-                        new EmployeeDto(2L, "Jane Smith", 60000.0, "owner-2"));
+    List<EmployeeDto> employees =
+        List.of(
+            new EmployeeDto(1L, "John Doe", 50000.0, "owner-1"),
+            new EmployeeDto(2L, "Jane Smith", 60000.0, "owner-2"));
 
-        given(employeeService.findAll()).willReturn(employees);
+    given(employeeService.findAll()).willReturn(employees);
 
     mockMvc
         .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
@@ -94,7 +91,7 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetAllEmployeesEmpty() throws Exception {
-        given(employeeService.findAll()).willReturn(List.of());
+    given(employeeService.findAll()).willReturn(List.of());
 
     mockMvc
         .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))
@@ -105,7 +102,7 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByQueryParam() throws Exception {
-        given(employeeService.findById(1L)).willReturn(new EmployeeDto(1L, "Alice Johnson", 70000.0));
+    given(employeeService.findById(1L)).willReturn(new EmployeeDto(1L, "Alice Johnson", 70000.0));
 
     mockMvc
         .perform(get("/api/employees").param("id", "1").accept(MediaType.APPLICATION_JSON))
@@ -118,8 +115,10 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByQueryParamNotFound() throws Exception {
-        given(employeeService.findById(999L))
-                .willThrow(new com.example.core.exception.EmployeeNotFoundException("Employee not found with ID: 999"));
+    given(employeeService.findById(999L))
+        .willThrow(
+            new com.example.core.exception.EmployeeNotFoundException(
+                "Employee not found with ID: 999"));
 
     mockMvc
         .perform(get("/api/employees").param("id", "999").accept(MediaType.APPLICATION_JSON))
@@ -129,9 +128,9 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByPathVariable() throws Exception {
-        Long employeeId = 1L;
-        given(employeeService.findById(employeeId))
-                .willReturn(new EmployeeDto(employeeId, "Bob Wilson", 55000.0));
+    Long employeeId = 1L;
+    given(employeeService.findById(employeeId))
+        .willReturn(new EmployeeDto(employeeId, "Bob Wilson", 55000.0));
 
     mockMvc
         .perform(get("/api/employees/{id}", employeeId).accept(MediaType.APPLICATION_JSON))
@@ -144,8 +143,10 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetEmployeeByPathVariableNotFound() throws Exception {
-        given(employeeService.findById(999L))
-                .willThrow(new com.example.core.exception.EmployeeNotFoundException("Employee not found with ID: 999"));
+    given(employeeService.findById(999L))
+        .willThrow(
+            new com.example.core.exception.EmployeeNotFoundException(
+                "Employee not found with ID: 999"));
 
     mockMvc
         .perform(get("/api/employees/{id}", 999).accept(MediaType.APPLICATION_JSON))
@@ -171,83 +172,83 @@ class EmployeeControllerTest {
         .andExpect(jsonPath("$.*", hasItem(containsString("must be greater than or equal to 1"))));
   }
 
-    @Test
-    void testGetOwnedEmployeeRequiresAuthentication() throws Exception {
-        mockMvc
-                .perform(get("/api/employees/{id}/owned", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.status").value(401))
-                .andExpect(jsonPath("$.error").value("Unauthorized"));
-    }
+  @Test
+  void testGetOwnedEmployeeRequiresAuthentication() throws Exception {
+    mockMvc
+        .perform(get("/api/employees/{id}/owned", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.status").value(401))
+        .andExpect(jsonPath("$.error").value("Unauthorized"));
+  }
 
-    @Test
-    @WithMockUser(username = "owner", roles = "USER")
-    void testGetOwnedEmployeeAllowsOwnerAfterReturnObjectCheck() throws Exception {
-        EmployeeDto employee = new EmployeeDto(1L, "Owner Employee", 72000.0, "owner");
+  @Test
+  @WithMockUser(username = "owner", roles = "USER")
+  void testGetOwnedEmployeeAllowsOwnerAfterReturnObjectCheck() throws Exception {
+    EmployeeDto employee = new EmployeeDto(1L, "Owner Employee", 72000.0, "owner");
 
-        given(employeeService.findById(1L)).willReturn(employee);
-        given(employeeAuthorization.canAccessEmployee(eq(employee), any())).willReturn(true);
+    given(employeeService.findById(1L)).willReturn(employee);
+    given(employeeAuthorization.canAccessEmployee(eq(employee), any())).willReturn(true);
 
-        mockMvc
-                .perform(get("/api/employees/{id}/owned", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Owner Employee"))
-                .andExpect(jsonPath("$.createdBy").value("owner"));
-    }
+    mockMvc
+        .perform(get("/api/employees/{id}/owned", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1L))
+        .andExpect(jsonPath("$.name").value("Owner Employee"))
+        .andExpect(jsonPath("$.createdBy").value("owner"));
+  }
 
-    @Test
-    @WithMockUser(username = "other-user", roles = "USER")
-    void testGetOwnedEmployeeRejectsNonOwnerAfterReturnObjectCheck() throws Exception {
-        EmployeeDto employee = new EmployeeDto(1L, "Owner Employee", 72000.0, "owner");
+  @Test
+  @WithMockUser(username = "other-user", roles = "USER")
+  void testGetOwnedEmployeeRejectsNonOwnerAfterReturnObjectCheck() throws Exception {
+    EmployeeDto employee = new EmployeeDto(1L, "Owner Employee", 72000.0, "owner");
 
-        given(employeeService.findById(1L)).willReturn(employee);
-        given(employeeAuthorization.canAccessEmployee(eq(employee), any())).willReturn(false);
+    given(employeeService.findById(1L)).willReturn(employee);
+    given(employeeAuthorization.canAccessEmployee(eq(employee), any())).willReturn(false);
 
-        mockMvc
-                .perform(get("/api/employees/{id}/owned", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
-    }
+    mockMvc
+        .perform(get("/api/employees/{id}/owned", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+  }
 
-    @Test
-    void testGetEmployeeCompensationRequiresAuthentication() throws Exception {
-        mockMvc
-                .perform(get("/api/employees/{id}/compensation", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.status").value(401))
-                .andExpect(jsonPath("$.error").value("Unauthorized"));
-    }
+  @Test
+  void testGetEmployeeCompensationRequiresAuthentication() throws Exception {
+    mockMvc
+        .perform(get("/api/employees/{id}/compensation", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.status").value(401))
+        .andExpect(jsonPath("$.error").value("Unauthorized"));
+  }
 
-    @Test
-    @WithMockUser(username = "owner", roles = "USER")
-    void testGetEmployeeCompensationAllowsOwnerAfterReturnObjectCheck() throws Exception {
-        EmployeeCompensationDto compensation = new EmployeeCompensationDto(1L, 72000.0, "owner");
+  @Test
+  @WithMockUser(username = "owner", roles = "USER")
+  void testGetEmployeeCompensationAllowsOwnerAfterReturnObjectCheck() throws Exception {
+    EmployeeCompensationDto compensation = new EmployeeCompensationDto(1L, 72000.0, "owner");
 
-        given(employeeService.findCompensationById(1L)).willReturn(compensation);
-        given(employeeAuthorization.canAccessCompensation(eq(compensation), any())).willReturn(true);
+    given(employeeService.findCompensationById(1L)).willReturn(compensation);
+    given(employeeAuthorization.canAccessCompensation(eq(compensation), any())).willReturn(true);
 
-        mockMvc
-                .perform(get("/api/employees/{id}/compensation", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.salary").value(72000.0))
-                .andExpect(jsonPath("$.createdBy").value("owner"));
-    }
+    mockMvc
+        .perform(get("/api/employees/{id}/compensation", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1L))
+        .andExpect(jsonPath("$.salary").value(72000.0))
+        .andExpect(jsonPath("$.createdBy").value("owner"));
+  }
 
-    @Test
-    @WithMockUser(username = "other-user", roles = "USER")
-    void testGetEmployeeCompensationRejectsNonOwnerAfterReturnObjectCheck() throws Exception {
-        EmployeeCompensationDto compensation = new EmployeeCompensationDto(1L, 72000.0, "owner");
+  @Test
+  @WithMockUser(username = "other-user", roles = "USER")
+  void testGetEmployeeCompensationRejectsNonOwnerAfterReturnObjectCheck() throws Exception {
+    EmployeeCompensationDto compensation = new EmployeeCompensationDto(1L, 72000.0, "owner");
 
-        given(employeeService.findCompensationById(1L)).willReturn(compensation);
-        given(employeeAuthorization.canAccessCompensation(eq(compensation), any())).willReturn(false);
+    given(employeeService.findCompensationById(1L)).willReturn(compensation);
+    given(employeeAuthorization.canAccessCompensation(eq(compensation), any())).willReturn(false);
 
-        mockMvc
-                .perform(get("/api/employees/{id}/compensation", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
-    }
+    mockMvc
+        .perform(get("/api/employees/{id}/compensation", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
+  }
 
   @Test
   @WithMockUser(roles = "USER")
@@ -277,40 +278,12 @@ class EmployeeControllerTest {
   }
 
   @Test
-  void testGetAuthoritiesWhenAnonymous() throws Exception {
-    given(employeeService.getCurrentUserAuthorities()).willReturn(List.of());
-
-    mockMvc
-        .perform(get("/api/employees/authorities").accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
-  }
-
-  @Test
-  @WithMockUser(
-      username = "reader",
-      authorities = {"CAN_READ", "CAN_AUDIT"})
-  void testGetAuthorities() throws Exception {
-    List<GrantedAuthority> authorities =
-        List.of(new SimpleGrantedAuthority("CAN_READ"), new SimpleGrantedAuthority("CAN_AUDIT"));
-
-    doReturn(authorities).when(employeeService).getCurrentUserAuthorities();
-
-    mockMvc
-        .perform(get("/api/employees/authorities").accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$", hasItem("CAN_READ")))
-        .andExpect(jsonPath("$", hasItem("CAN_AUDIT")));
-  }
-
-  @Test
   @WithMockUser(authorities = "CAN_WRITE")
   void testCreateEmployee() throws Exception {
     EmployeeDto newEmployeeDto = new EmployeeDto(null, "Charlie Brown", 65000.0);
-        EmployeeDto savedEmployee = new EmployeeDto(3L, "Charlie Brown", 65000.0);
+    EmployeeDto savedEmployee = new EmployeeDto(3L, "Charlie Brown", 65000.0);
 
-        given(employeeService.save(any(EmployeeDto.class))).willReturn(savedEmployee);
+    given(employeeService.save(any(EmployeeDto.class))).willReturn(savedEmployee);
 
     mockMvc
         .perform(
@@ -562,7 +535,7 @@ class EmployeeControllerTest {
   @Test
   @WithMockUser(authorities = "CAN_READ")
   void testGetAllEmployeesUnexpectedError() throws Exception {
-        given(employeeService.findAll()).willThrow(new RuntimeException("DAO exploded"));
+    given(employeeService.findAll()).willThrow(new RuntimeException("DAO exploded"));
 
     mockMvc
         .perform(get("/api/employees").accept(MediaType.APPLICATION_JSON))

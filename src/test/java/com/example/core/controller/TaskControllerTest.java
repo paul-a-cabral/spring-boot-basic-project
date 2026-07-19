@@ -1,5 +1,6 @@
 package com.example.core.controller;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.core.config.SecurityConfig;
+import com.example.core.service.AsyncLearningService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 class TaskControllerTest {
 
   @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+  @MockitoBean private AsyncLearningService asyncLearningService;
 
   @Autowired private MockMvc mockMvc;
 
@@ -87,5 +90,34 @@ class TaskControllerTest {
         .perform(post("/api/tasks/audit-task"))
         .andExpect(status().isOk())
         .andExpect(content().string("Success: Audit task executed!"));
+  }
+
+  @Test
+  void startAsyncReportReturnsUnauthorizedWhenNotAuthenticated() throws Exception {
+    mockMvc.perform(post("/api/tasks/reports/async")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @WithMockUser(username = "user", roles = "USER")
+  void startAsyncReportReturnsAcceptedWhenAuthenticated() throws Exception {
+    given(asyncLearningService.startReportJob("user")).willReturn("job-123");
+
+    mockMvc
+        .perform(post("/api/tasks/reports/async"))
+        .andExpect(status().isAccepted())
+        .andExpect(jsonPath("$.jobId").value("job-123"))
+        .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+  }
+
+  @Test
+  @WithMockUser(username = "user", roles = "USER")
+  void asyncReportStatusReturnsNotFoundForUnknownJob() throws Exception {
+    given(asyncLearningService.getStatus("missing-job")).willReturn("NOT_FOUND");
+
+    mockMvc
+        .perform(get("/api/tasks/reports/async/missing-job"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.jobId").value("missing-job"))
+        .andExpect(jsonPath("$.status").value("NOT_FOUND"));
   }
 }

@@ -12,24 +12,6 @@ public class EmployeeTransactions {
     this.employeeDAO = employeeDAO;
   }
 
-  // @EventListener(classes = ApplicationReadyEvent.class)
-  void performTransaction() {
-    System.out.println(
-        "[BThereEBThereEThereFOREThere are currently "
-            + employeeDAO.findAll().size()
-            + " employee(s) in the db");
-    try {
-      System.out.println("### Performing a rolled back transaction...");
-      withRuntimeException();
-    } catch (Exception e) {
-      System.out.println("Transaction failed: " + e.getMessage());
-      // Rollback transaction
-      System.out.println(
-          "There are currently " + employeeDAO.findAll().size() + " employee(s) in the db");
-      System.out.println("Expecting to have 0");
-    }
-  }
-
   @Transactional
   void withRuntimeException() {
     // Start

@@ -68,17 +68,12 @@ public class SecurityConfig {
                 exceptions
                     .authenticationEntryPoint(customAuthenticationEntryPoint)
                     .accessDeniedHandler(customAccessDeniedHandler))
-        .exceptionHandling(
-            exceptions ->
-                exceptions
-                    .authenticationEntryPoint(customAuthenticationEntryPoint)
-                    .accessDeniedHandler(customAccessDeniedHandler))
         .authorizeHttpRequests(
             auth ->
                 auth
                     // 1. Group all public endpoints
                     .requestMatchers(
-                        "/h2-console/**", "/api/tasks/get-something", "/api/employees/authorities")
+                        "/h2-console/**", "/api/tasks/get-something", "/api/auth/authorities")
                     .permitAll()
 
                     // 2. Group all authenticated endpoints 🚀

@@ -39,21 +39,16 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmployeeControllerAuthorizationMatrixTest {
 
-  @MockitoBean
-  private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-  @MockitoBean
-  private EmployeeService employeeService;
+  @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+  @MockitoBean private EmployeeService employeeService;
 
   @MockitoBean(name = "employeeAuthorization")
   private EmployeeAuthorization employeeAuthorization;
 
-  @MockitoBean
-  private JwtService jwtService;
-  @MockitoBean
-  private UserDetailsService userDetailsService;
+  @MockitoBean private JwtService jwtService;
+  @MockitoBean private UserDetailsService userDetailsService;
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
   Stream<Scenario> authorizationMatrix() {
     return Stream.of(
@@ -63,16 +58,18 @@ class EmployeeControllerAuthorizationMatrixTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .with(user("reader").authorities(new SimpleGrantedAuthority("CAN_READ"))),
             200,
-            () -> given(employeeService.findAll())
-                .willReturn(List.of(new EmployeeDto(1L, "Jane", 50000.0, "owner")))),
+            () ->
+                given(employeeService.findAll())
+                    .willReturn(List.of(new EmployeeDto(1L, "Jane", 50000.0, "owner")))),
         scenario(
             "GET /api/employees with ROLE_ADMIN",
             get("/api/employees")
                 .accept(MediaType.APPLICATION_JSON)
                 .with(user("admin").roles("ADMIN")),
             200,
-            () -> given(employeeService.findAll())
-                .willReturn(List.of(new EmployeeDto(1L, "Jane", 50000.0, "owner")))),
+            () ->
+                given(employeeService.findAll())
+                    .willReturn(List.of(new EmployeeDto(1L, "Jane", 50000.0, "owner")))),
         scenario(
             "GET /api/employees/{id}/owned as owner",
             get("/api/employees/{id}/owned", 1L)
@@ -91,7 +88,8 @@ class EmployeeControllerAuthorizationMatrixTest {
                 .with(user("owner").roles("USER")),
             200,
             () -> {
-              EmployeeCompensationDto compensation = new EmployeeCompensationDto(1L, 50000.0, "owner");
+              EmployeeCompensationDto compensation =
+                  new EmployeeCompensationDto(1L, 50000.0, "owner");
               given(employeeService.findCompensationById(1L)).willReturn(compensation);
               given(employeeAuthorization.canAccessCompensation(eq(compensation), any()))
                   .willReturn(true);
@@ -102,23 +100,25 @@ class EmployeeControllerAuthorizationMatrixTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .with(user("admin").roles("ADMIN")),
             200,
-            () -> given(employeeService.findById(1L)).willReturn(new EmployeeDto(1L, "Jane", 50000.0, "owner"))),
+            () ->
+                given(employeeService.findById(1L))
+                    .willReturn(new EmployeeDto(1L, "Jane", 50000.0, "owner"))),
         scenario(
             "GET /api/employees/{id}/compensation with ROLE_ADMIN",
             get("/api/employees/{id}/compensation", 1L)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(user("admin").roles("ADMIN")),
             200,
-            () -> given(employeeService.findCompensationById(1L))
-                .willReturn(new EmployeeCompensationDto(1L, 50000.0, "owner"))),
+            () ->
+                given(employeeService.findCompensationById(1L))
+                    .willReturn(new EmployeeCompensationDto(1L, 50000.0, "owner"))),
         scenario(
             "GET /api/employees/audit with CAN_AUDIT",
             get("/api/employees/audit")
                 .accept(MediaType.APPLICATION_JSON)
                 .with(user("auditor").authorities(new SimpleGrantedAuthority("CAN_AUDIT"))),
             200,
-            () -> {
-            }),
+            () -> {}),
         scenario(
             "POST /api/employees with CAN_WRITE",
             post("/api/employees")
@@ -126,8 +126,9 @@ class EmployeeControllerAuthorizationMatrixTest {
                 .content("{\"name\":\"New Employee\",\"salary\":65000.0}")
                 .with(user("writer").authorities(new SimpleGrantedAuthority("CAN_WRITE"))),
             201,
-            () -> given(employeeService.save(any(EmployeeDto.class)))
-                .willReturn(new EmployeeDto(10L, "New Employee", 65000.0, "writer"))),
+            () ->
+                given(employeeService.save(any(EmployeeDto.class)))
+                    .willReturn(new EmployeeDto(10L, "New Employee", 65000.0, "writer"))),
         scenario(
             "PUT /api/employees/{id} with CAN_EDIT",
             put("/api/employees/{id}", 1L)
@@ -147,8 +148,9 @@ class EmployeeControllerAuthorizationMatrixTest {
                 .content("{\"id\":1,\"name\":\"Patched Employee\"}")
                 .with(user("editor").authorities(new SimpleGrantedAuthority("CAN_EDIT"))),
             200,
-            () -> given(employeeService.update(any(EmployeeDto.class)))
-                .willReturn(new EmployeeDto(1L, "Patched Employee", 50000.0))),
+            () ->
+                given(employeeService.update(any(EmployeeDto.class)))
+                    .willReturn(new EmployeeDto(1L, "Patched Employee", 50000.0))),
         scenario(
             "DELETE /api/employees/{id} with CAN_DELETE",
             delete("/api/employees/{id}", 1L)
@@ -195,7 +197,8 @@ class EmployeeControllerAuthorizationMatrixTest {
                 .with(user("user").roles("USER")),
             403,
             () -> {
-              EmployeeCompensationDto compensation = new EmployeeCompensationDto(1L, 50000.0, "owner");
+              EmployeeCompensationDto compensation =
+                  new EmployeeCompensationDto(1L, 50000.0, "owner");
               given(employeeService.findCompensationById(1L)).willReturn(compensation);
               given(employeeAuthorization.canAccessCompensation(eq(compensation), any()))
                   .willReturn(false);
@@ -245,16 +248,14 @@ class EmployeeControllerAuthorizationMatrixTest {
   }
 
   private Scenario scenario(String name, MockHttpServletRequestBuilder request) {
-    return new Scenario(name, request, () -> {
-    }, 403);
+    return new Scenario(name, request, () -> {}, 403);
   }
 
   private record Scenario(
       String name,
       MockHttpServletRequestBuilder request,
       ScenarioSetup setup,
-      int expectedStatus) {
-  }
+      int expectedStatus) {}
 
   @FunctionalInterface
   private interface ScenarioSetup {
