@@ -1,9 +1,11 @@
 package com.example.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -74,10 +76,14 @@ public class CourseControllerTest {
         .perform(
             post("/api/courses")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\": \"Biology\"}"))
+                .content("{\"id\": 1, \"name\": \"Biology\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1))
         .andExpect(jsonPath("$.name").value("Biology"));
+
+    var captor = org.mockito.ArgumentCaptor.forClass(Course.class);
+    verify(courseService).create(captor.capture());
+    assertThat(captor.getValue().getId()).isNull();
   }
 
   @Test

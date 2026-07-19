@@ -7,6 +7,10 @@ import com.example.util.StudentGenerator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +26,19 @@ public class StudentService {
     this.emailDomain = emailProperties.getDomain();
   }
 
+  @Caching(
+      put = @CachePut(cacheNames = "studentById", key = "#result.id"),
+      evict = @CacheEvict(cacheNames = "students", key = "'all'"))
   public Student create(@NonNull Student student) {
     return repository.save(student);
   }
 
+  @Cacheable(cacheNames = "students", key = "'all'")
   public List<Student> list() {
     return repository.findAll();
   }
 
+  @Cacheable(cacheNames = "studentById", key = "#id", unless = "#result == null")
   public Optional<Student> get(@NonNull Long id) {
     return repository.findById(id);
   }
@@ -38,6 +47,9 @@ public class StudentService {
     return repository.findByEmail(email);
   }
 
+  @Caching(
+      put = @CachePut(cacheNames = "studentById", key = "#id", unless = "#result == null"),
+      evict = @CacheEvict(cacheNames = "students", key = "'all'"))
   public Optional<Student> updateName(@NonNull Long id, String name) {
     return repository
         .findById(id)
@@ -50,6 +62,11 @@ public class StudentService {
             });
   }
 
+  @Caching(
+      evict = {
+        @CacheEvict(cacheNames = "studentById", key = "#id", beforeInvocation = true),
+        @CacheEvict(cacheNames = "students", key = "'all'", beforeInvocation = true)
+      })
   public boolean delete(@NonNull Long id) {
     return repository
         .findById(id)
