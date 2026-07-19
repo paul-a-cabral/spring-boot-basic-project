@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.mybean;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ public class MyBeanConfiguration {
     return new MySingletonBean();
   }
 
-  @Bean
+  @Bean // or specify which method is for PreDestroy: @Bean(destroyMethod = "cleanUp")
   @Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
   public MyPrototypeBean myPrototypeBean() {
     return new MyPrototypeBean();

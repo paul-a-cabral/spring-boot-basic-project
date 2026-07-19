@@ -1,13 +1,15 @@
 package com.example.core.service;
 
-import com.example.core.data.EmployeeDAO;
-import com.example.core.data.EmployeeEntity;
+import com.example.core.dto.EmployeeCompensationDto;
 import com.example.core.dto.EmployeeDto;
+import com.example.core.employee.EmployeeDAO;
+import com.example.core.employee.EmployeeEntity;
 import com.example.core.exception.EmployeeNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,14 @@ public class EmployeeService {
 
   EmployeeService(EmployeeDAO employeeDAO) {
     this.employeeDAO = employeeDAO;
+  }
+
+  public List<EmployeeDto> findAll() {
+    return employeeDAO.findAll().stream().map(EmployeeDto::fromEntityToDto).toList();
+  }
+
+  public boolean existsById(Long id) {
+    return employeeDAO.existsById(id);
   }
 
   @Transactional
@@ -36,11 +46,7 @@ public class EmployeeService {
   @Transactional
   public EmployeeDto update(EmployeeDto dto) {
     // 1. Retrieve the existing entity from the database
-    EmployeeEntity entity =
-        employeeDAO
-            .findById(dto.getId())
-            .orElseThrow(
-                () -> new EntityNotFoundException("Employee not found with ID: " + dto.getId()));
+    EmployeeEntity entity = findEmployeeEntityOrThrow(dto.getId(), EntityNotFoundException::new);
 
     // 2. Apply updates from the DTO to the retrieved Entity
     if (dto.getName() != null) {
@@ -49,6 +55,9 @@ public class EmployeeService {
     if (dto.getSalary() != null) {
       entity.setSalary(dto.getSalary());
     }
+
+    // we do not modify the createdBy field on update, as it should remain the same as when the
+    // entity was first created
 
     // 3. Save it back. Spring Data automatically detects the ID and issues an
     // UPDATE query.
@@ -60,17 +69,8 @@ public class EmployeeService {
 
   @Transactional
   public void delete(Long id) {
-    // 1. Fetch the entity (1st query)
-    EmployeeEntity entity =
-        employeeDAO
-            .findById(id)
-            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with ID: " + id));
-    employeeDAO
-        .findById(id)
-        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with ID: " + id));
-
-    // 2. Delete it (2nd query)
-    employeeDAO.delete(entity); // Make sure 'delete(EmployeeEntity entity)' is declared in your DAO
+    EmployeeEntity entity = findEmployeeEntityOrThrow(id, EmployeeNotFoundException::new);
+    employeeDAO.delete(entity);
   }
 
   public Collection<? extends GrantedAuthority> getCurrentUserAuthorities() {
@@ -85,5 +85,38 @@ public class EmployeeService {
 
     // 3. Return the pre-loaded authorities
     return authentication.getAuthorities();
+  }
+
+  public String getLoggedInUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      return authentication.getName(); // Returns the username of the logged-in user
+    }
+    return null; // No user is logged in
+  }
+
+  @Transactional
+  public EmployeeDto save(EmployeeDto dto) {
+    EmployeeEntity entity = EmployeeDto.fromDtoToEntity(dto);
+    entity.setCreatedBy(getLoggedInUsername()); // Set the createdBy field
+    EmployeeEntity savedEntity = employeeDAO.save(entity);
+    return EmployeeDto.fromEntityToDto(savedEntity);
+  }
+
+  public EmployeeDto findById(Long id) {
+    return EmployeeDto.fromEntityToDto(
+        findEmployeeEntityOrThrow(id, EmployeeNotFoundException::new));
+  }
+
+  public EmployeeCompensationDto findCompensationById(Long id) {
+    return EmployeeCompensationDto.fromEntityToDto(
+        findEmployeeEntityOrThrow(id, EmployeeNotFoundException::new));
+  }
+
+  private <X extends RuntimeException> EmployeeEntity findEmployeeEntityOrThrow(
+      Long id, java.util.function.Function<String, X> exceptionFactory) {
+    return employeeDAO
+        .findById(id)
+        .orElseThrow(() -> exceptionFactory.apply("Employee not found with ID: " + id));
   }
 }

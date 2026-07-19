@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.mybean;
 
 /** Thread-safe singleton example. */
 public final class MyThreadsafeSingleton {

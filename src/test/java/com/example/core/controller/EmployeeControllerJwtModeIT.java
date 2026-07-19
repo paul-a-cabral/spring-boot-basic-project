@@ -69,8 +69,9 @@ class EmployeeControllerJwtModeIT {
 
     @SuppressWarnings("unchecked")
     ResponseEntity<Map<String, Object>> response =
-      (ResponseEntity<Map<String, Object>>)
-        (ResponseEntity<?>) restTemplate.postForEntity(baseUrl() + "/api/auth/login", request, Map.class);
+        (ResponseEntity<Map<String, Object>>)
+            (ResponseEntity<?>)
+                restTemplate.postForEntity(baseUrl() + "/api/auth/login", request, Map.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();

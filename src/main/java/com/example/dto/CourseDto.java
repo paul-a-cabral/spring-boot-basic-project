@@ -9,6 +9,7 @@ import org.springframework.lang.Nullable;
 
 public class CourseDto {
 
+  @JsonProperty(access = Access.READ_ONLY)
   private Long id;
 
   @NotBlank(message = "Course name is required")
@@ -61,6 +62,6 @@ public class CourseDto {
   }
 
   public Course toEntity() {
-    return new Course(getId(), getName());
+    return new Course(null, getName());
   }
 }

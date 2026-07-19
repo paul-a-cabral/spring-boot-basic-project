@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.config.StudentEmailProperties;
 import com.example.core.config.SecurityConfig;
 import com.example.core.security.JwtService;
-import com.example.config.StudentEmailProperties;
 import com.example.entity.Student;
 import com.example.service.CourseService;
 import com.example.service.EnrollmentService;

@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.core.mybean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -23,7 +23,7 @@ public class MyPrototypeBean implements MyBeanInterface {
     System.out.println(">>> MyPrototypeBean pre-initialization logic");
   }
 
-  @PreDestroy
+  @PreDestroy // or: @Bean(destroyMethod = "cleanUp")
   public void destroy() {
     System.out.println("MyPrototypeBean cleanup logic");
   }

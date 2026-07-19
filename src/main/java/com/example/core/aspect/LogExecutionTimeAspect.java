@@ -14,7 +14,7 @@ public class LogExecutionTimeAspect {
   private static final Logger logger = LoggerFactory.getLogger(LogExecutionTimeAspect.class);
 
   // This pointcut targets any method annotated with @LogExecutionTime
-  @Around("@annotation(com.example.core.annotations.LogExecutionTime)")
+  @Around("@annotation(com.example.core.annotation.LogExecutionTime)")
   public Object logTime(ProceedingJoinPoint joinPoint) throws Throwable {
     long startTime = System.currentTimeMillis();
 
