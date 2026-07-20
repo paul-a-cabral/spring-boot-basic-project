@@ -27,7 +27,7 @@
     <app.server.port>8181</app.server.port>
   </properties>
 
-    <!--
+  <!--
       ==============================================
       Spring Boot Starter Cheat Sheet
 
@@ -47,7 +47,7 @@
           AspectJ support
 
       ==============================================
-  --> 
+  -->
   <dependencies>
     <!-- Spring Boot Web Starter -->
     <!-- 
@@ -250,6 +250,27 @@
             <googleJavaFormat />
           </java>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version> <!-- Use the latest stable version -->
+        <executions>
+          <!-- Prepares the property pointing to the JaCoCo runtime agent -->
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <!-- Ensures the report is generated after tests run -->
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

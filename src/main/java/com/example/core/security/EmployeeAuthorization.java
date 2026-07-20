@@ -43,7 +43,7 @@ public class EmployeeAuthorization {
       return false;
     }
 
-    String createdBy = compensation.getCreatedBy();
+    String createdBy = compensation.createdBy();
     return createdBy != null && createdBy.equals(authentication.getName());
   }
 }

@@ -3,18 +3,9 @@ package com.example.core.dto;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.core.employee.EmployeeEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EmployeeDtoTest {
-
-  private EmployeeDto employeeDto;
-
-  @BeforeEach
-  void setUp() {
-    employeeDto = new EmployeeDto();
-    new EmployeeEntity();
-  }
 
   @Test
   void testDefaultConstructor() {
@@ -40,21 +31,21 @@ class EmployeeDtoTest {
   @Test
   void testSetAndGetId() {
     Long testId = 5L;
-    employeeDto.setId(testId);
+    EmployeeDto employeeDto = new EmployeeDto().withId(testId);
     assertEquals(testId, employeeDto.getId());
   }
 
   @Test
   void testSetAndGetName() {
     String testName = "Jane Smith";
-    employeeDto.setName(testName);
+    EmployeeDto employeeDto = new EmployeeDto(null, testName, null);
     assertEquals(testName, employeeDto.getName());
   }
 
   @Test
   void testSetAndGetSalary() {
     Double testSalary = 75000.0;
-    employeeDto.setSalary(testSalary);
+    EmployeeDto employeeDto = new EmployeeDto(null, null, testSalary);
     assertEquals(testSalary, employeeDto.getSalary());
   }
 
@@ -127,9 +118,7 @@ class EmployeeDtoTest {
     String name = "Diana Prince";
     Double salary = 85000.0;
 
-    employeeDto.setId(id);
-    employeeDto.setName(name);
-    employeeDto.setSalary(salary);
+    EmployeeDto employeeDto = new EmployeeDto(id, name, salary);
 
     assertEquals(id, employeeDto.getId());
     assertEquals(name, employeeDto.getName());

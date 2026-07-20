@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -79,10 +78,7 @@ public class EmployeeController {
   }
 
   @GetMapping("/audit")
-  // @PreAuthorize("hasAuthority('CAN_AUDIT')")
-  @Secured(
-      "CAN_AUDIT") // older version, but still works, of @PreAuthorize("hasAuthority('CAN_AUDIT')")
-  // it does not support SpEL expressions, so you cannot use it for complex authorization logic
+  @PreAuthorize("hasAuthority('CAN_AUDIT')")
   public String auditEmployees() {
     return "Audit results for employees";
   }
@@ -102,8 +98,7 @@ public class EmployeeController {
       @PathVariable Long id, @Validated(OnUpdate.class) @RequestBody EmployeeDto dto) {
     boolean exists = employeeService.existsById(id);
 
-    dto.setId(id);
-    EmployeeDto savedDto = employeeService.saveOrReplace(dto);
+    EmployeeDto savedDto = employeeService.saveOrReplace(dto.withId(id));
 
     if (exists) {
       return ResponseEntity.ok(savedDto);
@@ -119,8 +114,7 @@ public class EmployeeController {
       @PathVariable @NotNull @Min(1) Long id,
       @Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto) {
 
-    employeeDto.setId(id); // Ensure the DTO has the correct ID from the path variable
-    return employeeService.update(employeeDto);
+    return employeeService.update(employeeDto.withId(id));
   }
 
   @DeleteMapping("/{id}")

@@ -14,12 +14,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class DatabaseSeedingServiceTest {
 
+    @Autowired private DatabaseSeedingService databaseSeedingService;
+
   @Autowired private UserRepository userRepository;
 
   @Autowired private EmployeeDAO employeeDAO;
 
   @Test
   void seededEmployeesUseCreatorWithCanWritePermission() {
+        databaseSeedingService.seedInitialData();
+
     Set<String> canWriteUsernames =
         userRepository.findAll().stream()
             .filter(user -> user.getRole() != null)
