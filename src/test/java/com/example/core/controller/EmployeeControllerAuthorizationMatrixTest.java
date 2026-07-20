@@ -123,7 +123,13 @@ class EmployeeControllerAuthorizationMatrixTest {
             "POST /api/employees with CAN_WRITE",
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"New Employee\",\"salary\":65000.0}")
+                .content(
+                    """
+                    {
+                      "name": "New Employee",
+                      "salary": 65000.0
+                    }
+                    """)
                 .with(user("writer").authorities(new SimpleGrantedAuthority("CAN_WRITE"))),
             201,
             () ->
@@ -133,7 +139,14 @@ class EmployeeControllerAuthorizationMatrixTest {
             "PUT /api/employees/{id} with CAN_EDIT",
             put("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Updated Employee\",\"salary\":70000.0}")
+                .content(
+                    """
+                                        {
+                                            "id": 1,
+                                            "name": "Updated Employee",
+                                            "salary": 70000.0
+                                        }
+                                        """)
                 .with(user("editor").authorities(new SimpleGrantedAuthority("CAN_EDIT"))),
             200,
             () -> {
@@ -145,7 +158,13 @@ class EmployeeControllerAuthorizationMatrixTest {
             "PATCH /api/employees/{id} with CAN_EDIT",
             patch("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Patched Employee\"}")
+                .content(
+                    """
+                    {
+                      "id": 1,
+                      "name": "Patched Employee"
+                    }
+                    """)
                 .with(user("editor").authorities(new SimpleGrantedAuthority("CAN_EDIT"))),
             200,
             () ->
@@ -207,19 +226,38 @@ class EmployeeControllerAuthorizationMatrixTest {
             "POST /api/employees without CAN_WRITE",
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"New Employee\",\"salary\":65000.0}")
+                .content(
+                    """
+                    {
+                      "name": "New Employee",
+                      "salary": 65000.0
+                    }
+                    """)
                 .with(user("user").roles("USER"))),
         scenario(
             "PUT /api/employees/{id} without CAN_WRITE or CAN_EDIT",
             put("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Updated Employee\",\"salary\":70000.0}")
+                .content(
+                    """
+                    {
+                      "id": 1,
+                      "name": "Updated Employee",
+                      "salary": 70000.0
+                    }
+                    """)
                 .with(user("user").roles("USER"))),
         scenario(
             "PATCH /api/employees/{id} without CAN_EDIT",
             patch("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Patched Employee\"}")
+                .content(
+                    """
+                    {
+                      "id": 1,
+                      "name": "Patched Employee"
+                    }
+                    """)
                 .with(user("user").roles("USER"))),
         scenario(
             "DELETE /api/employees/{id} without CAN_DELETE",

@@ -22,8 +22,10 @@ import com.example.core.dto.EmployeeDto;
 import com.example.core.security.EmployeeAuthorization;
 import com.example.core.security.JwtService;
 import com.example.core.service.EmployeeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -289,7 +291,7 @@ class EmployeeControllerTest {
         .perform(
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newEmployeeDto)))
+                .content(toJson(newEmployeeDto)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(3L))
         .andExpect(jsonPath("$.name").value("Charlie Brown"))
@@ -305,7 +307,7 @@ class EmployeeControllerTest {
         .perform(
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newEmployeeDto)))
+                .content(toJson(newEmployeeDto)))
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
   }
@@ -319,7 +321,7 @@ class EmployeeControllerTest {
         .perform(
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidEmployeeDto)))
+                .content(toJson(invalidEmployeeDto)))
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
@@ -337,7 +339,7 @@ class EmployeeControllerTest {
         .perform(
             post("/api/employees")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidEmployeeDto)))
+                .content(toJson(invalidEmployeeDto)))
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
@@ -386,7 +388,7 @@ class EmployeeControllerTest {
         .perform(
             put("/api/employees/{id}", employeeId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(replaceEmployeeDto)))
+                .content(toJson(replaceEmployeeDto)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(employeeId))
         .andExpect(jsonPath("$.name").value("Updated Name"))
@@ -407,7 +409,7 @@ class EmployeeControllerTest {
         .perform(
             put("/api/employees/{id}", employeeId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(replaceEmployeeDto)))
+                .content(toJson(replaceEmployeeDto)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(employeeId))
         .andExpect(jsonPath("$.name").value("New Employee"))
@@ -423,7 +425,7 @@ class EmployeeControllerTest {
         .perform(
             put("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(replaceEmployeeDto)))
+                .content(toJson(replaceEmployeeDto)))
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
   }
@@ -440,7 +442,7 @@ class EmployeeControllerTest {
         .perform(
             patch("/api/employees/{id}", employeeId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Patched Name\"}"))
+                .content(toJson(Map.of("id", 1, "name", "Patched Name"))))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(employeeId))
         .andExpect(jsonPath("$.name").value("Patched Name"))
@@ -454,7 +456,7 @@ class EmployeeControllerTest {
         .perform(
             patch("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"name\":\"Patched Name\"}"))
+                .content(toJson(Map.of("id", 1, "name", "Patched Name"))))
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.error").value("[Core Error Handler] Access denied: Access Denied"));
   }
@@ -470,7 +472,7 @@ class EmployeeControllerTest {
         .perform(
             patch("/api/employees/{id}", 999L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":999,\"name\":\"Patched Name\"}"))
+                .content(toJson(Map.of("id", 999, "name", "Patched Name"))))
         .andExpect(status().isInternalServerError())
         .andExpect(
             jsonPath("$.error")
@@ -486,7 +488,7 @@ class EmployeeControllerTest {
         .perform(
             patch("/api/employees/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"Patched Name\"}"))
+                .content(toJson(Map.of("name", "Patched Name"))))
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.error")
@@ -500,7 +502,7 @@ class EmployeeControllerTest {
         .perform(
             patch("/api/employees/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"salary\":\"not-a-number\"}"))
+                .content(toJson(Map.of("id", 1, "salary", "not-a-number"))))
         .andExpect(status().isBadRequest());
   }
 
@@ -545,5 +547,9 @@ class EmployeeControllerTest {
                 .value(
                     containsString(
                         "An unexpected error occurred in EmployeeController.getEmployees(): DAO exploded")));
+  }
+
+  private String toJson(Object obj) throws JsonProcessingException {
+    return objectMapper.writeValueAsString(obj);
   }
 }

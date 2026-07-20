@@ -73,8 +73,7 @@ public class EmployeeController {
   @PreAuthorize("isAuthenticated()")
   @PostAuthorize(
       "hasRole('ADMIN') or @employeeAuthorization.canAccessCompensation(returnObject, authentication)")
-  public EmployeeCompensationDto getEmployeeCompensation(
-      @PathVariable @NotNull @Min(1) Long id) {
+  public EmployeeCompensationDto getEmployeeCompensation(@PathVariable @NotNull @Min(1) Long id) {
     return employeeService.findCompensationById(id);
   }
 
@@ -99,8 +98,7 @@ public class EmployeeController {
       @PathVariable Long id, @Validated(OnUpdate.class) @RequestBody EmployeeDto dto) {
     boolean exists = employeeService.existsById(id);
 
-    dto.setId(id);
-    EmployeeDto savedDto = employeeService.saveOrReplace(dto);
+    EmployeeDto savedDto = employeeService.saveOrReplace(dto.withId(id));
 
     if (exists) {
       return ResponseEntity.ok(savedDto);
@@ -116,8 +114,7 @@ public class EmployeeController {
       @PathVariable @NotNull @Min(1) Long id,
       @Validated(OnUpdate.class) @RequestBody EmployeeDto employeeDto) {
 
-    employeeDto.setId(id); // Ensure the DTO has the correct ID from the path variable
-    return employeeService.update(employeeDto);
+    return employeeService.update(employeeDto.withId(id));
   }
 
   @DeleteMapping("/{id}")

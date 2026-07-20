@@ -2,6 +2,7 @@ package com.example.core.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.core.security.AuthenticationMode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = "app.security.authentication=BASIC")
+  properties = "app.security.authentication=" + AuthenticationMode.BASIC_VALUE)
 class EmployeeControllerBasicModeIT {
 
   @LocalServerPort private int port;

@@ -2,6 +2,7 @@ package com.example.core.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.example.core.security.AuthenticationMode;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = "app.security.authentication=JWT")
+  properties = "app.security.authentication=" + AuthenticationMode.JWT_VALUE)
 class EmployeeControllerJwtModeIT {
 
   @LocalServerPort private int port;

@@ -1,6 +1,7 @@
 package com.example.core.config;
 
 import com.example.core.security.JwtAuthenticationFilter;
+import com.example.core.security.AuthenticationMode;
 import com.example.core.security.JwtService;
 import com.example.core.security.SecurityProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,18 +33,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   @Bean
-  @ConditionalOnProperty(prefix = "app.security", name = "authentication", havingValue = "JWT")
+  @ConditionalOnProperty(
+      prefix = "app.security",
+      name = "authentication",
+      havingValue = AuthenticationMode.JWT_VALUE)
   public JwtAuthenticationFilter jwtAuthenticationFilter(
       JwtService jwtService, UserDetailsService userDetailsService) {
     return new JwtAuthenticationFilter(jwtService, userDetailsService);
   }
 
   @Bean
+  // for "Not logged in" (401)
   public AuthenticationEntryPoint customAuthenticationEntryPoint(ObjectMapper objectMapper) {
     return new CustomAuthenticationEntryPoint(objectMapper);
   }
 
   @Bean
+  // for "Logged in but not authorized" (403)
   public AccessDeniedHandler customAccessDeniedHandler(ObjectMapper objectMapper) {
     return new CustomAccessDeniedHandler(objectMapper);
   }
@@ -60,9 +67,15 @@ public class SecurityConfig {
       ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider,
       SecurityProperties securityProperties)
       throws Exception {
-    http.csrf(csrf -> csrf.disable()) // Disabled for stateless/testing ease
+
+    // CSRF is enabled by default.
+    // Often disabled for stateless/testing ease: REST APIs, JWT, Postman/Swagger
+    // testing
+    http.csrf(csrf -> csrf.disable())
         // Allow same-origin frame options so the H2 console layout renders
         .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(
             exceptions ->
                 exceptions
@@ -87,15 +100,17 @@ public class SecurityConfig {
                     .permitAll());
 
     switch (securityProperties.getAuthentication()) {
-      case "BASIC" -> http.httpBasic(Customizer.withDefaults());
+      case BASIC -> http.httpBasic(Customizer.withDefaults());
 
-      case "JWT" -> {
+      case JWT -> {
         JwtAuthenticationFilter jwtAuthenticationFilter =
             jwtAuthenticationFilterProvider.getIfAvailable();
         if (jwtAuthenticationFilter == null) {
           throw new IllegalStateException(
               "JWT authentication mode requires JwtAuthenticationFilter bean");
         }
+        // so that the JWT authenticates the request before Spring attempts
+        // username/password authentication
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
       }
     }

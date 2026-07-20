@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
   }
 
-  /** Handles validation errors from @Valid annotations in StudentDto and CourseDto. */
+  /** Handles validation errors from @Valid request body annotations. */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
     Map<String, Object> body = new LinkedHashMap<>();

@@ -10,6 +10,7 @@ import com.example.core.service.RoleSeedService;
 import com.example.service.CourseCacheWarmupService;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -39,6 +40,7 @@ public class DatabaseSeedingService {
   }
 
   @LogExecutionTime
+  @EventListener(classes = ApplicationReadyEvent.class)
   public void seedInitialData() {
     // Check if the database is already populated to prevent duplicate insertions on restart.
     if (userRepository.count() == 0) {
@@ -55,8 +57,7 @@ public class DatabaseSeedingService {
 
                 User user = new User();
                 user.setUsername(userRecord.username());
-                user.setPassword(
-                    passwordEncoder.encode("password")); // Default password for all users
+                user.setPassword(passwordEncoder.encode(userRecord.username()));
                 user.setRole(role);
                 userRepository.save(user);
               });
@@ -66,12 +67,19 @@ public class DatabaseSeedingService {
       System.out.println(">> Database already contains users. Skipping initialization.");
     }
 
-    if (employeeDAO.findAll().isEmpty()) {
+    long existingDefaultEmployees =
+      employeeDAO.findAll().stream()
+        .filter(employee -> employee.getName() != null)
+        .filter(employee -> employee.getName().startsWith("Employee-"))
+        .count();
+
+    if (existingDefaultEmployees < 10) {
       List<String> canWriteUsernames = resolveCanWriteUsernames();
+      long missingDefaultEmployees = 10 - existingDefaultEmployees;
 
       List<EmployeeEntity> employees =
-          Stream.iterate(1, i -> i + 1)
-              .limit(10)
+        IntStream.rangeClosed((int) existingDefaultEmployees + 1, (int) (existingDefaultEmployees + missingDefaultEmployees))
+          .boxed()
               .map(
                   i ->
                       EmployeeEntity.builder()
@@ -82,10 +90,10 @@ public class DatabaseSeedingService {
               .toList();
 
       employees.forEach(employeeDAO::save);
-      System.out.println(">> Database successfully seeded with default employee records!");
+      System.out.println(">> Database successfully seeded missing default employee records!");
     } else {
       System.out.println(
-          ">> Database already contains employees. Skipping employee initialization.");
+          ">> Database already contains default employee records. Skipping employee initialization.");
     }
 
     courseCacheWarmupService.warmCourseCache();

@@ -6,7 +6,7 @@
   },
   {
     "name": "app.security.authentication",
-    "type": "java.lang.String",
+    "type": "com.example.core.security.AuthenticationMode",
     "description": "A description for 'app.security.authentication'"
   },
   {

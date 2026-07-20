@@ -12,7 +12,7 @@ public class AtLeastOneFieldValidator implements ConstraintValidator<AtLeastOneF
       return true;
     }
 
-    boolean hasName = dto.getName() != null && !dto.getName().trim().isEmpty();
+    boolean hasName = dto.getName() != null && !dto.getName().isBlank();
     boolean hasSalary = dto.getSalary() != null;
 
     // Return true if at least one field has a value
