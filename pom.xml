@@ -198,6 +198,16 @@
       <scope>runtime</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-batch</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -293,6 +303,12 @@
     <profile>
       <id>jwt-run</id>
       <properties>
+        <!--
+          Activate the "jwt" profile when running the application with this profile.
+          This is useful for testing JWT authentication in a development environment.
+
+          Equivalent to spring.profiles.active=JWT
+        -->
         <spring-boot.run.profiles>jwt</spring-boot.run.profiles>
         <spring-boot.run.fork>false</spring-boot.run.fork>
       </properties>
