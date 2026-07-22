@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-  properties = "app.security.authentication=" + AuthenticationMode.BASIC_VALUE)
+    properties = "app.security.authentication=" + AuthenticationMode.BASIC_VALUE)
 class EmployeeControllerBasicModeIT {
 
   @LocalServerPort private int port;

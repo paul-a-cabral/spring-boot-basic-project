@@ -18,36 +18,33 @@ import lombok.Builder;
 @Builder
 @AtLeastOneField(groups = {OnUpdate.class}) // 👈 Applied here for updates only!
 public record EmployeeDto(
-  @Null(
-      groups = {OnCreate.class},
-      message = "ID must be null when creating or replacing an employee")
-  @NotNull(
-      groups = {OnUpdate.class},
-      message = "ID is required when updating an existing employee")
-  Long id,
+    @Null(
+            groups = {OnCreate.class},
+            message = "ID must be null when creating or replacing an employee")
+        @NotNull(
+            groups = {OnUpdate.class},
+            message = "ID is required when updating an existing employee")
+        Long id,
 
-  // Note: On OnUpdate, name is no longer strictly @NotBlank on its own.
-  // It is only validated if it is actually passed (to prevent blank names).
-  @NotBlank(
-      groups = {OnCreate.class},
-      message = "Name is required when creating or replacinga new employee")
-  String name,
-
-  @Min(
-      value = 0,
-      groups = {OnCreate.class, OnUpdate.class},
-      message = "Salary must be a non-negative value")
-  Double salary,
-
-  @JsonProperty(access = Access.READ_ONLY)
-  @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-  String createdBy) { // Optional field, can be null
+    // Note: On OnUpdate, name is no longer strictly @NotBlank on its own.
+    // It is only validated if it is actually passed (to prevent blank names).
+    @NotBlank(
+            groups = {OnCreate.class},
+            message = "Name is required when creating or replacing a new employee")
+        String name,
+    @Min(
+            value = 0,
+            groups = {OnCreate.class, OnUpdate.class},
+            message = "Salary must be a non-negative value")
+        Double salary,
+    @JsonProperty(access = Access.READ_ONLY) @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+        String createdBy) { // Optional field, can be null
 
   public EmployeeDto() {
     this(null, null, null, null);
   }
 
-  // for backwards comapatibily of tests
+  // for backwards comapatibility of tests
   public EmployeeDto(Long id, String name, Double salary) {
     this(id, name, salary, null);
   }

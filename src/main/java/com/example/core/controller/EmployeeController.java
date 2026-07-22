@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController // combines @Controller + @ResponseBody
 @RequestMapping("/api/employees")
 @Validated
 public class EmployeeController {

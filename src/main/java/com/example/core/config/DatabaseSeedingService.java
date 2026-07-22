@@ -68,18 +68,20 @@ public class DatabaseSeedingService {
     }
 
     long existingDefaultEmployees =
-      employeeDAO.findAll().stream()
-        .filter(employee -> employee.getName() != null)
-        .filter(employee -> employee.getName().startsWith("Employee-"))
-        .count();
+        employeeDAO.findAll().stream()
+            .filter(employee -> employee.getName() != null)
+            .filter(employee -> employee.getName().startsWith("Employee-"))
+            .count();
 
     if (existingDefaultEmployees < 10) {
       List<String> canWriteUsernames = resolveCanWriteUsernames();
       long missingDefaultEmployees = 10 - existingDefaultEmployees;
 
       List<EmployeeEntity> employees =
-        IntStream.rangeClosed((int) existingDefaultEmployees + 1, (int) (existingDefaultEmployees + missingDefaultEmployees))
-          .boxed()
+          IntStream.rangeClosed(
+                  (int) existingDefaultEmployees + 1,
+                  (int) (existingDefaultEmployees + missingDefaultEmployees))
+              .boxed()
               .map(
                   i ->
                       EmployeeEntity.builder()

@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-  properties = "app.security.authentication=" + AuthenticationMode.JWT_VALUE)
+    properties = "app.security.authentication=" + AuthenticationMode.JWT_VALUE)
 class EmployeeControllerJwtModeIT {
 
   @LocalServerPort private int port;

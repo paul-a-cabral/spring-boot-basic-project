@@ -1,7 +1,7 @@
 package com.example.core.config;
 
-import com.example.core.security.JwtAuthenticationFilter;
 import com.example.core.security.AuthenticationMode;
+import com.example.core.security.JwtAuthenticationFilter;
 import com.example.core.security.JwtService;
 import com.example.core.security.SecurityProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,7 +94,7 @@ public class SecurityConfig {
                     .authenticated()
 
                     // 3. Catch-all public access for any other /api/** endpoints & fallback
-                    .requestMatchers("/api/**")
+                    .requestMatchers("/api/**", "/actuator/**")
                     .permitAll()
                     .anyRequest()
                     .permitAll());

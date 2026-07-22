@@ -6,17 +6,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.core.config.SecurityConfig;
+import com.example.core.security.AuthenticationMode;
 import com.example.core.service.AsyncLearningService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TaskController.class)
 @Import(SecurityConfig.class)
+@TestPropertySource(properties = "app.security.authentication=" + AuthenticationMode.BASIC_VALUE)
 class TaskControllerDefaultModeTest {
 
   @MockitoBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;

@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 @Value // Generates getters, toString, equals, hashCode, and makes fields final
 public class SecurityProperties {
 
-  @NotNull(message = "Authentication mode must be specified in application.properties as either BASIC or JWT")
+  @NotNull(
+      message =
+          "Authentication mode must be specified in application.properties as either BASIC or JWT")
   private AuthenticationMode authentication; // Spring Boot binds this via constructor injection!
 }
