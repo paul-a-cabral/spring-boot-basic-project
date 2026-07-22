@@ -40,7 +40,8 @@ public class EmployeeBatchConfig {
 
   // 2. WRITER: Save entities into H2 database using JPA
   @Bean
-  public JpaItemWriter<EmployeeEntity> jpaEmployeeWriter(EntityManagerFactory entityManagerFactory) {
+  public JpaItemWriter<EmployeeEntity> jpaEmployeeWriter(
+      EntityManagerFactory entityManagerFactory) {
     return new JpaItemWriterBuilder<EmployeeEntity>()
         .entityManagerFactory(entityManagerFactory)
         .build();
@@ -76,5 +77,4 @@ public class EmployeeBatchConfig {
         .start(importEmployeeStep)
         .build();
   }
-
 }

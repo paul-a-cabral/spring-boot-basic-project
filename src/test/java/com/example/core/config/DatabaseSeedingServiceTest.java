@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class DatabaseSeedingServiceTest {
 
-    @Autowired private DatabaseSeedingService databaseSeedingService;
+  @Autowired private DatabaseSeedingService databaseSeedingService;
 
   @Autowired private UserRepository userRepository;
 
@@ -22,7 +22,7 @@ class DatabaseSeedingServiceTest {
 
   @Test
   void seededEmployeesUseCreatorWithCanWritePermission() {
-        databaseSeedingService.seedInitialData();
+    databaseSeedingService.seedInitialData();
 
     Set<String> canWriteUsernames =
         userRepository.findAll().stream()

@@ -17,18 +17,24 @@ public class JobStatusListener implements JobExecutionListener {
     // Transition status from STARTING to STARTED / IN_PROGRESS as the background
     // worker picks it up
     jobExecution.setStatus(BatchStatus.STARTED);
-    log.info(">>> Job {} (ID: {}) transition: Status is now IN_PROGRESS / STARTED <<<",
-        jobExecution.getJobInstance().getJobName(), jobExecution.getId());
+    log.info(
+        ">>> Job {} (ID: {}) transition: Status is now IN_PROGRESS / STARTED <<<",
+        jobExecution.getJobInstance().getJobName(),
+        jobExecution.getId());
   }
 
   @Override
   public void afterJob(JobExecution jobExecution) {
     if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-      log.info(">>> Job {} (ID: {}) finished successfully: SUCCESS / COMPLETED <<<",
-          jobExecution.getJobInstance().getJobName(), jobExecution.getId());
+      log.info(
+          ">>> Job {} (ID: {}) finished successfully: SUCCESS / COMPLETED <<<",
+          jobExecution.getJobInstance().getJobName(),
+          jobExecution.getId());
     } else {
-      log.error(">>> Job {} (ID: {}) finished with failure: FAILED <<<",
-          jobExecution.getJobInstance().getJobName(), jobExecution.getId());
+      log.error(
+          ">>> Job {} (ID: {}) finished with failure: FAILED <<<",
+          jobExecution.getJobInstance().getJobName(),
+          jobExecution.getId());
     }
   }
 }

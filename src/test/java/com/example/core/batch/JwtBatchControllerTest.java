@@ -6,6 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.core.config.SecurityConfig;
+import com.example.core.config.TestJpaAuditingConfig;
+import com.example.core.security.JwtService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -20,21 +23,17 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.example.core.config.SecurityConfig;
-import com.example.core.security.JwtService;
-import com.example.core.config.TestJpaAuditingConfig;
-
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.TestPropertySource;
 
 @WebMvcTest(JwtBatchController.class)
 @ActiveProfiles({"jwt", "test"})
@@ -44,15 +43,25 @@ class JwtBatchControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockitoBean(name = "asyncJobLauncher") private JobLauncher jobLauncher;
+  @MockitoBean(name = "asyncJobLauncher")
+  private JobLauncher jobLauncher;
 
   // Specify the bean name if there are multiple Job beans
-  @MockitoBean(name = "importEmployeeJob") private Job importEmployeeJob;
+  @MockitoBean(name = "importEmployeeJob")
+  private Job importEmployeeJob;
 
   @MockitoBean private JobExplorer jobExplorer;
 
   // ⚠️ Required dependencies for SecurityConfig in JWT mode:
   @MockitoBean private JwtService jwtService;
+
+  // Code Review:
+  // In JWT mode the JwtAuthenticationFilter typically relies on
+  // JwtService/UserDetailsService to validate the token and build the
+  // Authentication. Since both are mocked but not stubbed, authentication will
+  // likely fail and this test may return 401/403. Either stub the mocks to accept
+  // adminToken and return an ADMIN-authenticated user, or bypass the filter for
+  // the test (e.g., @WithMockUser(roles=\"ADMIN\") if your config allows it).
   @MockitoBean private UserDetailsService userDetailsService;
 
   @BeforeEach
@@ -97,7 +106,8 @@ class JwtBatchControllerTest {
         .andExpect(status().isForbidden());
   }
 
-  // Secret key for signing the JWT tokens (must match the one in application-jwt.properties or
+  // Secret key for signing the JWT tokens (must match the one in
+  // application-jwt.properties or
   // JwtService)
   private static final String SECRET_KEY =
       "YmFzZTY0LWVuY29kZWQtc3VwZXItc2VjcmV0LWtleS1mb3Itand0LXNhbXBsZS0yMDI2";

@@ -8,9 +8,8 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
- * JPA Auditing Configuration.
- * Only activated in non-test profiles to prevent "JPA metamodel must not be empty"
- * errors in @WebMvcTest test slices.
+ * JPA Auditing Configuration. Only activated in non-test profiles to prevent "JPA metamodel must
+ * not be empty" errors in @WebMvcTest test slices.
  */
 @Configuration
 @EnableJpaAuditing
@@ -18,8 +17,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class JpaAuditingConfig {
 
   /**
-   * Provides a no-op AuditorAware bean that returns empty Optional.
-   * This is used when no actual auditor information is available.
+   * Provides a no-op AuditorAware bean that returns empty Optional. This is used when no actual
+   * auditor information is available.
    */
   @Bean
   @ConditionalOnMissingBean

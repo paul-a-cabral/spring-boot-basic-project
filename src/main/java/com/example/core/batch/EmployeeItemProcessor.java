@@ -12,7 +12,7 @@ public class EmployeeItemProcessor implements ItemProcessor<EmployeeCsvRecord, E
   public EmployeeEntity process(EmployeeCsvRecord csvRecord) throws InterruptedException {
     // ⏱️ Artificial delay: Pause for 1 second per item
     // Random delay between 1-3 seconds
-    Thread.sleep(1000 * Math.max(1, Math.min(5, (int) (Math.random() * 3)))); 
+    Thread.sleep(1000 * Math.max(1, Math.min(5, (int) (Math.random() * 3))));
 
     // Filter invalid negative salary records (returning null skips writing this
     // item)
@@ -31,8 +31,7 @@ public class EmployeeItemProcessor implements ItemProcessor<EmployeeCsvRecord, E
   }
 
   private String capitalizeWords(String input) {
-    if (input == null || input.isBlank())
-      return input;
+    if (input == null || input.isBlank()) return input;
     String[] words = input.split("\\s+");
     StringBuilder sb = new StringBuilder();
     for (String word : words) {
